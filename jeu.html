@@ -268,6 +268,74 @@
         color: var(--primary-dark);
       }
 
+      .avatar-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+      }
+
+      .avatar-card {
+        border: 2px solid transparent;
+        border-radius: 22px;
+        padding: 1.1rem;
+        background: rgba(108, 92, 231, 0.08);
+        display: grid;
+        gap: 0.8rem;
+        text-align: left;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.2s ease,
+          border-color 0.2s ease, background 0.2s ease;
+        color: inherit;
+      }
+
+      .avatar-card:focus {
+        outline: none;
+      }
+
+      .avatar-card:focus-visible {
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.4);
+      }
+
+      .avatar-card[data-selected="true"] {
+        background: linear-gradient(
+          130deg,
+          rgba(108, 92, 231, 0.18),
+          rgba(255, 127, 80, 0.12)
+        );
+        border-color: rgba(108, 92, 231, 0.45);
+        box-shadow: 0 24px 50px -34px rgba(108, 92, 231, 0.55);
+        transform: translateY(-3px);
+      }
+
+      .avatar-card__media {
+        display: flex;
+        justify-content: center;
+      }
+
+      .avatar-card__content {
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .avatar-card__media img {
+        width: min(160px, 70%);
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 18px 24px rgba(47, 28, 106, 0.2));
+      }
+
+      .avatar-card__title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .avatar-card__text {
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
       .chip-group {
         display: flex;
         flex-wrap: wrap;
@@ -296,6 +364,84 @@
         transform: translateY(-2px);
       }
 
+      .hud__item--hero {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 0.9rem;
+        text-align: left;
+      }
+
+      .hud__hero-portrait {
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(108, 92, 231, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem;
+      }
+
+      .hud__hero-portrait img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .hud__hero-info {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .summary__hero {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: center;
+        padding: 1.1rem 1.3rem;
+        border-radius: 22px;
+        background: rgba(108, 92, 231, 0.1);
+        margin: 0.75rem 0 1.25rem;
+      }
+
+      .summary__hero-portrait {
+        width: 96px;
+        height: 96px;
+        border-radius: 24px;
+        overflow: hidden;
+        background: rgba(108, 92, 231, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+      }
+
+      .summary__hero-portrait img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .summary__hero-info {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .summary__hero-info .summary__label {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .summary__hero-info .summary__value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
       .home-link {
         display: inline-flex;
         align-items: center;
@@ -305,7 +451,38 @@
         font-size: 0.95rem;
         color: var(--muted);
         text-decoration: none;
-      }    </style>\r\n  </head>
+      }
+
+      @media (max-width: 640px) {
+        .avatar-card {
+          padding: 0.9rem;
+        }
+
+        .avatar-card__media img {
+          width: min(140px, 60%);
+        }
+
+        .hud__hero-portrait {
+          width: 54px;
+          height: 54px;
+        }
+
+        .summary__hero {
+          grid-template-columns: 1fr;
+          text-align: center;
+          justify-items: center;
+        }
+
+        .summary__hero-portrait {
+          width: 88px;
+          height: 88px;
+        }
+
+        .summary__hero-info {
+          text-align: center;
+        }
+      }
+    </style>\r\n  </head>
   <body data-app="game">
     <main class="app app--game">
       <header class="app__header app__header--compact">
@@ -320,9 +497,65 @@
                   <section class="panel panel--setup" id="setup-panel">
         <h2>Pr&eacute;pare ton exp&eacute;dition</h2>
         <p class="setup__intro">
-          Choisis les royaumes &agrave; explorer avant d'affronter dragons et gobelins.
+          Choisis ton h&eacute;ros de l&eacute;gende et les royaumes &agrave; explorer avant
+          d'affronter dragons et gobelins.
         </p>
         <div class="setup__controls">
+          <div class="setup__group setup__group--avatars">
+            <span class="setup__label">Compagnons d'aventure</span>
+            <div class="avatar-group" id="avatar-options">
+              <button
+                class="avatar-card"
+                type="button"
+                data-avatar="chevalier"
+                data-avatar-name="Chevalier Ardent"
+                data-avatar-src="assets/chevalier.png"
+                data-avatar-alt="Portrait du Chevalier Ardent"
+                data-selected="false"
+                aria-pressed="false"
+              >
+                <div class="avatar-card__media">
+                  <img
+                    src="assets/chevalier.png"
+                    alt="Chevalier Ardent brandissant son &eacute;p&eacute;e"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="avatar-card__content">
+                  <span class="avatar-card__title">Chevalier Ardent</span>
+                  <span class="avatar-card__text">
+                    Armure &eacute;tincelante, bouclier d&eacute;ploy&eacute; : ce chevalier prot&egrave;ge
+                    le royaume et fait pleuvoir les coups critiques.
+                  </span>
+                </div>
+              </button>
+              <button
+                class="avatar-card"
+                type="button"
+                data-avatar="princesse"
+                data-avatar-name="Princesse Strat&egrave;ge"
+                data-avatar-src="assets/princesse.png"
+                data-avatar-alt="Portrait de la Princesse Strat&egrave;ge"
+                data-selected="false"
+                aria-pressed="false"
+              >
+                <div class="avatar-card__media">
+                  <img
+                    src="assets/princesse.png"
+                    alt="Princesse Strat&egrave;ge pr&ecirc;te &agrave; lancer un sort"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="avatar-card__content">
+                  <span class="avatar-card__title">Princesse Strat&egrave;ge</span>
+                  <span class="avatar-card__text">
+                    Baguette &agrave; la main et grimoires mystiques : elle orchestre la
+                    bataille avec des plans rus&eacute;s et des sorts de soutien.
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
           <div class="setup__group">
             <span class="setup__label">Missions disponibles</span>
             <div class="chip-group" id="table-options">
@@ -350,7 +583,7 @@
             </article>
           </div>
         </div>
-        <p class="setup__notice" id="start-hint">Choisis une mission pour partir en campagne.</p>
+        <p class="setup__notice" id="start-hint">Choisis un h&eacute;ros et une mission pour partir en campagne.</p>
         <div class="game__actions">
           <button class="primary-btn" id="start-btn" type="button">Partir en mission</button>
         </div>
@@ -358,6 +591,15 @@
 
       <section class="panel panel--game" id="game-panel" hidden>
         <div class="hud">
+          <div class="hud__item hud__item--hero" id="hud-avatar" hidden>
+            <div class="hud__hero-portrait">
+              <img id="hud-avatar-image" src="" alt="" />
+            </div>
+            <div class="hud__hero-info">
+              <span class="hud__label">Avatar</span>
+              <span class="hud__value" id="hud-avatar-name">---</span>
+            </div>
+          </div>
           <div class="hud__item">
             <span class="hud__label">⏱️ Sablier</span>
             <span class="hud__value" id="timer">⏱️ 00:15</span>
@@ -413,6 +655,15 @@
           Tu as ramen&eacute; <strong id="summary-score">💎 0</strong> reliques et vaincu
           <strong id="summary-streak">🔥 0</strong> dragons d'affil&eacute;e.
         </p>
+        <div class="summary__hero" id="summary-avatar" hidden>
+          <div class="summary__hero-portrait">
+            <img id="summary-avatar-image" src="" alt="" />
+          </div>
+          <div class="summary__hero-info">
+            <span class="summary__label">Avatar choisi</span>
+            <span class="summary__value" id="summary-avatar-name"></span>
+          </div>
+        </div>
         <div class="summary__details">
           <div>
             <span class="summary__label">📜 Chapitres brav&eacute;s</span>
