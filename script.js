@@ -250,12 +250,13 @@ const CLASSIC_MODE_ID = "classic";
 
 const appState = {
   selectedTables: new Set(),
-  selectedMode: CLASSIC_MODE_ID
+  selectedMode: CLASSIC_MODE_ID,
+  selectedAvatar: null
 };
 
 let launcher = null;
 let gameElements = null;
-let gameState = createGameState([], CLASSIC_MODE_ID);
+let gameState = createGameState([], CLASSIC_MODE_ID, appState.selectedAvatar);
 let storageListenerBound = false;
 
 initApp();
@@ -265,6 +266,8 @@ function initApp() {
   gameElements = setupGameElements();
 
   bootstrapContextState();
+
+  selectAvatar(appState.selectedAvatar ? appState.selectedAvatar.id : null);
 
   renderTableChips();
   renderReferenceTables();
@@ -289,6 +292,7 @@ function initApp() {
 function bootstrapContextState() {
   if (IS_GAME_CONTEXT) {
     appState.selectedMode = CLASSIC_MODE_ID;
+    appState.selectedAvatar = null;
     applyGameQueryParameters();
   }
   if (!MINI_GAMES[appState.selectedMode]) {
@@ -377,6 +381,7 @@ function setupLauncherElements() {
     setupPanel: document.getElementById("setup-panel"),
     referencePanel: document.getElementById("reference-panel"),
     tableOptions: document.getElementById("table-options"),
+    avatarOptions: document.getElementById("avatar-options"),
     startBtn: document.getElementById("start-btn"),
     navButtons: Array.from(document.querySelectorAll(".nav-btn[data-panel]")),
     modeCards: Array.from(document.querySelectorAll(".mode-card")),
@@ -399,6 +404,10 @@ function setupLauncherElements() {
     }
   };
 
+  elements.avatarButtons = elements.avatarOptions
+    ? Array.from(elements.avatarOptions.querySelectorAll("[data-avatar]"))
+    : [];
+
   if (elements.startBtn) {
     elements.startBtn.addEventListener("click", function () {
       if (!launchSelectedMode()) {
@@ -406,6 +415,26 @@ function setupLauncherElements() {
       }
     });
   }
+
+  elements.avatarButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (button.dataset.selected === "true") {
+        selectAvatar(null);
+      } else {
+        selectAvatar(button.dataset.avatar || "");
+      }
+    });
+    button.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (button.dataset.selected === "true") {
+          selectAvatar(null);
+        } else {
+          selectAvatar(button.dataset.avatar || "");
+        }
+      }
+    });
+  });
 
   elements.navButtons.forEach(function (button) {
     button.addEventListener("click", function () {
@@ -462,7 +491,13 @@ function setupGameElements() {
     summaryWrong: document.getElementById("summary-wrong"),
     summaryXp: document.getElementById("summary-xp"),
     summaryLevel: document.getElementById("summary-level"),
-    summaryLevelProgress: document.getElementById("summary-level-progress")
+    summaryLevelProgress: document.getElementById("summary-level-progress"),
+    hudAvatar: document.getElementById("hud-avatar"),
+    hudAvatarImage: document.getElementById("hud-avatar-image"),
+    hudAvatarName: document.getElementById("hud-avatar-name"),
+    summaryAvatar: document.getElementById("summary-avatar"),
+    summaryAvatarImage: document.getElementById("summary-avatar-image"),
+    summaryAvatarName: document.getElementById("summary-avatar-name")
   };
 
   if (elements.choices) {
@@ -487,6 +522,53 @@ function setupGameElements() {
   }
 
   return elements;
+}
+
+function avatarDataFromButton(button) {
+  if (!button) {
+    return null;
+  }
+
+  const id = (button.dataset.avatar || "").trim();
+  if (!id) {
+    return null;
+  }
+
+  const titleElement = button.querySelector(".avatar-card__title");
+  const imageElement = button.querySelector("img");
+
+  const name = (button.dataset.avatarName || (titleElement ? titleElement.textContent || "" : "") || id).trim();
+  const image = (button.dataset.avatarSrc || (imageElement ? imageElement.getAttribute("src") || "" : "")).trim();
+  const alt = (button.dataset.avatarAlt || (imageElement ? imageElement.getAttribute("alt") || "" : "") || name || id).trim();
+
+  return {
+    id: id,
+    name: name || id,
+    image: image,
+    alt: alt || name || id
+  };
+}
+
+function selectAvatar(avatarId) {
+  const targetId = avatarId ? String(avatarId).trim() : "";
+  let selectedData = null;
+
+  if (launcher && Array.isArray(launcher.avatarButtons) && launcher.avatarButtons.length > 0) {
+    launcher.avatarButtons.forEach(function (button) {
+      const id = button.dataset.avatar || "";
+      const isActive = Boolean(targetId) && id === targetId;
+      button.dataset.selected = isActive ? "true" : "false";
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      button.classList.toggle("avatar-card--selected", isActive);
+
+      if (isActive) {
+        selectedData = avatarDataFromButton(button);
+      }
+    });
+  }
+
+  appState.selectedAvatar = normalizeAvatar(selectedData);
+  refreshStartAvailability();
 }
 function renderTableChips() {
   if (!launcher.tableOptions) {
@@ -726,7 +808,7 @@ function populateList(listElement, items) {
 }
 
 function refreshStartAvailability() {
-  if (!launcher.startBtn) {
+  if (!launcher || !launcher.startBtn) {
     return;
   }
 
@@ -734,7 +816,11 @@ function refreshStartAvailability() {
   const playable = mode.status === "playable";
   const hasTables = appState.selectedTables.size > 0;
   const requiresTables = IS_GAME_CONTEXT && Boolean(mode.supportsTables);
-  const canStart = playable && (!requiresTables || hasTables);
+  const requiresAvatar =
+    IS_GAME_CONTEXT && launcher && Array.isArray(launcher.avatarButtons) && launcher.avatarButtons.length > 0;
+  const hasAvatar = Boolean(appState.selectedAvatar && appState.selectedAvatar.id);
+  const canStart =
+    playable && (!requiresTables || hasTables) && (!requiresAvatar || hasAvatar);
 
   launcher.startBtn.dataset.mode = mode.id;
   const actionLabel = IS_GAME_CONTEXT ? "Commencer " : "Lancer ";
@@ -744,6 +830,10 @@ function refreshStartAvailability() {
   if (launcher.startHint) {
     if (!playable) {
       launcher.startHint.textContent = "Ce mini-jeu sera disponible tres bientot.";
+    } else if (requiresAvatar && !hasAvatar && requiresTables && !hasTables) {
+      launcher.startHint.textContent = "Choisis un héros et une mission pour partir en campagne.";
+    } else if (requiresAvatar && !hasAvatar) {
+      launcher.startHint.textContent = "Choisis un héros pour mener la mission.";
     } else if (requiresTables && !hasTables) {
       launcher.startHint.textContent = "Choisis une mission pour partir en campagne.";
     } else if (IS_LAUNCHER_CONTEXT) {
@@ -770,6 +860,10 @@ function launchSelectedMode() {
     return a - b;
   });
 
+  const requiresAvatar =
+    IS_GAME_CONTEXT && launcher && Array.isArray(launcher.avatarButtons) && launcher.avatarButtons.length > 0;
+  const hasAvatar = Boolean(appState.selectedAvatar && appState.selectedAvatar.id);
+
   if (IS_LAUNCHER_CONTEXT) {
     const target = mode.launchUrl || "jeu.html";
     const query = [];
@@ -787,6 +881,17 @@ function launchSelectedMode() {
     return false;
   }
 
+  if (requiresAvatar && !hasAvatar) {
+    if (launcher.startHint) {
+      if (mode.supportsTables && tables.length === 0) {
+        launcher.startHint.textContent = "Choisis un héros et une mission pour partir en campagne.";
+      } else {
+        launcher.startHint.textContent = "Choisis un héros pour mener la mission.";
+      }
+    }
+    return false;
+  }
+
   if (tables.length === 0) {
     if (launcher.startHint) {
       launcher.startHint.textContent = "Choisis une mission pour partir en campagne.";
@@ -799,7 +904,7 @@ function launchSelectedMode() {
 }
 
 function startEmbeddedGame(tables, modeId) {
-  gameState = createGameState(tables, modeId);
+  gameState = createGameState(tables, modeId, appState.selectedAvatar);
   updateGameHeader();
   if (launcher.startHint) {
     launcher.startHint.textContent = "Que la bravoure te guide !";
@@ -1126,6 +1231,7 @@ function renderTimer(seconds) {
 }
 
 function updateHud() {
+  renderHudAvatar();
   if (gameElements.score) {
     gameElements.score.textContent = "⭐ " + gameState.score;
   }
@@ -1151,6 +1257,38 @@ function updateProgress() {
   }
 }
 
+function renderHudAvatar() {
+  if (!gameElements.hudAvatar) {
+    return;
+  }
+
+  const avatar = gameState.avatar;
+  if (!avatar || !avatar.id) {
+    gameElements.hudAvatar.setAttribute("hidden", "true");
+    if (gameElements.hudAvatarImage) {
+      gameElements.hudAvatarImage.removeAttribute("src");
+      gameElements.hudAvatarImage.alt = "";
+    }
+    if (gameElements.hudAvatarName) {
+      gameElements.hudAvatarName.textContent = "---";
+    }
+    return;
+  }
+
+  gameElements.hudAvatar.removeAttribute("hidden");
+  if (gameElements.hudAvatarImage) {
+    if (avatar.image) {
+      gameElements.hudAvatarImage.src = avatar.image;
+    } else {
+      gameElements.hudAvatarImage.removeAttribute("src");
+    }
+    gameElements.hudAvatarImage.alt = avatar.alt || avatar.name || avatar.id;
+  }
+  if (gameElements.hudAvatarName) {
+    gameElements.hudAvatarName.textContent = avatar.name || avatar.id;
+  }
+}
+
 function endGame() {
   if (gameState.summaryDisplayed) {
     return;
@@ -1164,6 +1302,7 @@ function endGame() {
 }
 
 function renderSummary() {
+  renderSummaryAvatar();
   if (gameElements.summaryScore) {
     gameElements.summaryScore.textContent = "⭐ " + gameState.score;
   }
@@ -1196,6 +1335,38 @@ function renderSummary() {
   updateLevelCard();
 }
 
+function renderSummaryAvatar() {
+  if (!gameElements.summaryAvatar) {
+    return;
+  }
+
+  const avatar = gameState.avatar;
+  if (!avatar || !avatar.id) {
+    gameElements.summaryAvatar.setAttribute("hidden", "true");
+    if (gameElements.summaryAvatarImage) {
+      gameElements.summaryAvatarImage.removeAttribute("src");
+      gameElements.summaryAvatarImage.alt = "";
+    }
+    if (gameElements.summaryAvatarName) {
+      gameElements.summaryAvatarName.textContent = "";
+    }
+    return;
+  }
+
+  gameElements.summaryAvatar.removeAttribute("hidden");
+  if (gameElements.summaryAvatarImage) {
+    if (avatar.image) {
+      gameElements.summaryAvatarImage.src = avatar.image;
+    } else {
+      gameElements.summaryAvatarImage.removeAttribute("src");
+    }
+    gameElements.summaryAvatarImage.alt = avatar.alt || avatar.name || avatar.id;
+  }
+  if (gameElements.summaryAvatarName) {
+    gameElements.summaryAvatarName.textContent = avatar.name || avatar.id;
+  }
+}
+
 function computeXpGain() {
   const correctXp = gameState.correct * XP_PER_CORRECT;
   const streakXp = gameState.bestStreak * XP_PER_STREAK_POINT;
@@ -1212,7 +1383,7 @@ function restartGame() {
 
 function closeGameWindow() {
   stopTimer();
-  gameState = createGameState([], appState.selectedMode);
+  gameState = createGameState([], appState.selectedMode, appState.selectedAvatar);
   clearFeedback();
   resetQuestionCard();
   renderTimer(gameState.duration);
@@ -1330,7 +1501,29 @@ function updateLevelCard() {
   }
 }
 
-function createGameState(tables, modeId) {
+function normalizeAvatar(avatar) {
+  if (!avatar || typeof avatar !== "object") {
+    return null;
+  }
+
+  const id = typeof avatar.id === "string" ? avatar.id.trim() : "";
+  if (!id) {
+    return null;
+  }
+
+  const name = typeof avatar.name === "string" ? avatar.name.trim() : "";
+  const image = typeof avatar.image === "string" ? avatar.image.trim() : "";
+  const alt = typeof avatar.alt === "string" ? avatar.alt.trim() : "";
+
+  return {
+    id: id,
+    name: name || id,
+    image: image,
+    alt: alt || name || id
+  };
+}
+
+function createGameState(tables, modeId, avatarInfo) {
   const list = Array.isArray(tables)
     ? Array.from(new Set(tables.map(function (value) {
         return Number(value);
@@ -1356,7 +1549,8 @@ function createGameState(tables, modeId) {
     questions: 0,
     correct: 0,
     wrong: 0,
-    summaryDisplayed: false
+    summaryDisplayed: false,
+    avatar: normalizeAvatar(avatarInfo)
   };
 }
 
