@@ -38,24 +38,24 @@
       }
 
       .app--game {
-        width: min(1040px, 94%);
-        padding: clamp(2rem, 5vw, 3.5rem) 0 3rem;
+        width: min(960px, 94%);
+        padding: clamp(1.6rem, 4vw, 3rem) 0 2.4rem;
         display: grid;
-        gap: clamp(1.8rem, 4vw, 2.5rem);
+        gap: clamp(1.4rem, 3.2vw, 2.1rem);
       }
 
       .panel {
         background: var(--surface);
-        border-radius: 26px;
-        padding: clamp(1.6rem, 3vw, 2.4rem);
+        border-radius: 22px;
+        padding: clamp(1.2rem, 3vw, 2rem);
         box-shadow: var(--shadow);
       }
 
       .app__header {
         text-align: center;
         background: var(--surface);
-        border-radius: 26px;
-        padding: clamp(1.6rem, 3vw, 2.4rem);
+        border-radius: 22px;
+        padding: clamp(1.2rem, 3vw, 2rem);
         box-shadow: var(--shadow);
       }
 
@@ -79,13 +79,14 @@
       }
 
       .hud {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.75rem;
       }
 
       .hud__item {
         background: rgba(108, 92, 231, 0.08);
-        border-radius: 20px;
-        padding: 1rem 1.2rem;
+        border-radius: 18px;
+        padding: 0.8rem 1rem;
         text-align: center;
       }
 
@@ -98,17 +99,17 @@
       }
 
       .hud__value {
-        margin-top: 0.35rem;
-        font-size: 1.6rem;
+        margin-top: 0.3rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: var(--primary-dark);
       }
 
       .progress {
-        margin-top: 0.75rem;
+        margin-top: 0.6rem;
         background: rgba(108, 92, 231, 0.12);
         border-radius: 999px;
-        height: 0.65rem;
+        height: 0.55rem;
         overflow: hidden;
       }
 
@@ -120,10 +121,10 @@
       .primary-btn,
       .secondary-btn {
         border: none;
-        border-radius: 18px;
-        font-size: 1rem;
+        border-radius: 16px;
+        font-size: 0.95rem;
         font-weight: 700;
-        padding: 0.85rem 1.9rem;
+        padding: 0.7rem 1.6rem;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         font-family: inherit;
@@ -132,11 +133,11 @@
       .primary-btn {
         background: var(--primary);
         color: #fff;
-        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.65);
+        box-shadow: 0 18px 45px -34px rgba(108, 92, 231, 0.6);
       }
 
       .primary-btn:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
       }
 
       .secondary-btn {
@@ -151,42 +152,42 @@
 
       .question-card {
         display: grid;
-        gap: 1.5rem;
+        gap: 1.2rem;
         text-align: center;
       }
 
       .question-card__wheel {
         background: var(--surface-soft);
-        border-radius: 24px;
-        padding: 1.75rem;
+        border-radius: 22px;
+        padding: 1.25rem;
         box-shadow: inset 0 0 0 1px rgba(108, 92, 231, 0.08);
         display: grid;
-        gap: 0.75rem;
+        gap: 0.65rem;
       }
 
       .question-card__multiplier {
-        font-size: clamp(2.4rem, 6vw, 3.4rem);
+        font-size: clamp(2.1rem, 5.5vw, 2.9rem);
         font-weight: 700;
         color: var(--primary);
       }
 
       .question-card__prompt {
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         color: var(--muted);
       }
 
       .choices {
         display: grid;
-        gap: 1rem;
+        gap: 0.85rem;
       }
 
       .choice {
         background: var(--surface);
-        border-radius: 20px;
-        padding: 1rem 1.4rem;
+        border-radius: 18px;
+        padding: 0.85rem 1.1rem;
         display: flex;
         align-items: center;
-        gap: 0.85rem;
+        gap: 0.75rem;
         box-shadow: var(--shadow-soft);
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -209,20 +210,20 @@
       }
 
       .feedback {
-        min-height: 1.5rem;
-        font-size: 1.05rem;
+        min-height: 1.4rem;
+        font-size: 1rem;
         font-weight: 600;
         color: var(--accent);
       }
 
       .summary__details {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
 
       .summary__details > div {
         background: rgba(108, 92, 231, 0.08);
         border-radius: 18px;
-        padding: 1rem 1.2rem;
+        padding: 0.85rem 1rem;
         text-align: center;
       }
 
@@ -233,7 +234,7 @@
       }
 
       .summary__value {
-        font-size: 1.75rem;
+        font-size: 1.55rem;
         font-weight: 700;
         color: var(--primary-dark);
       }
@@ -246,19 +247,19 @@
 
       .app__footer--game {
         margin-top: auto;
-        padding: 2rem 0 3rem;
+        padding: 1.6rem 0 2.4rem;
         text-align: center;
         color: var(--muted);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
       .setup__controls {
         display: grid;
-        gap: 1.1rem;
+        gap: 0.9rem;
       }
 
       .setup__group {
         display: grid;
-        gap: 0.75rem;
+        gap: 0.6rem;
         text-align: left;
       }
 
@@ -270,17 +271,17 @@
 
       .avatar-group {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.85rem;
       }
 
       .avatar-card {
         border: 2px solid transparent;
-        border-radius: 22px;
-        padding: 1.1rem;
+        border-radius: 18px;
+        padding: 0.9rem;
         background: rgba(108, 92, 231, 0.08);
         display: grid;
-        gap: 0.8rem;
+        gap: 0.65rem;
         text-align: left;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.2s ease,
@@ -303,8 +304,8 @@
           rgba(255, 127, 80, 0.12)
         );
         border-color: rgba(108, 92, 231, 0.45);
-        box-shadow: 0 24px 50px -34px rgba(108, 92, 231, 0.55);
-        transform: translateY(-3px);
+        box-shadow: 0 20px 46px -36px rgba(108, 92, 231, 0.55);
+        transform: translateY(-2px);
       }
 
       .avatar-card__media {
@@ -314,11 +315,11 @@
 
       .avatar-card__content {
         display: grid;
-        gap: 0.55rem;
+        gap: 0.45rem;
       }
 
       .avatar-card__media img {
-        width: min(160px, 70%);
+        width: min(140px, 65%);
         max-width: 100%;
         height: auto;
         object-fit: contain;
@@ -326,14 +327,29 @@
       }
 
       .avatar-card__title {
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: var(--primary-dark);
       }
 
       .avatar-card__text {
         color: var(--muted);
-        line-height: 1.4;
+        line-height: 1.35;
+      }
+
+      .avatar-card[disabled] {
+        cursor: default;
+        opacity: 0.9;
+        box-shadow: none;
+      }
+
+      body[data-hero-locked="true"] .avatar-card:hover {
+        transform: none;
+        box-shadow: var(--shadow-soft);
+      }
+
+      body[data-hero-locked="true"] .avatar-card {
+        cursor: default;
       }
 
       .chip-group {
@@ -345,10 +361,10 @@
       .chip {
         border: none;
         border-radius: 999px;
-        padding: 0.6rem 1.4rem;
+        padding: 0.5rem 1.2rem;
         background: rgba(108, 92, 231, 0.12);
         color: var(--primary-dark);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
@@ -368,14 +384,14 @@
         display: grid;
         grid-template-columns: auto 1fr;
         align-items: center;
-        gap: 0.9rem;
+        gap: 0.75rem;
         text-align: left;
       }
 
       .hud__hero-portrait {
-        width: 62px;
-        height: 62px;
-        border-radius: 18px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         overflow: hidden;
         background: rgba(108, 92, 231, 0.16);
         display: flex;
@@ -398,18 +414,18 @@
       .summary__hero {
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 1rem;
+        gap: 0.9rem;
         align-items: center;
-        padding: 1.1rem 1.3rem;
-        border-radius: 22px;
+        padding: 1rem 1.2rem;
+        border-radius: 20px;
         background: rgba(108, 92, 231, 0.1);
-        margin: 0.75rem 0 1.25rem;
+        margin: 0.65rem 0 1.1rem;
       }
 
       .summary__hero-portrait {
-        width: 96px;
-        height: 96px;
-        border-radius: 24px;
+        width: 92px;
+        height: 92px;
+        border-radius: 22px;
         overflow: hidden;
         background: rgba(108, 92, 231, 0.16);
         display: flex;
@@ -455,16 +471,16 @@
 
       @media (max-width: 640px) {
         .avatar-card {
-          padding: 0.9rem;
+          padding: 0.75rem;
         }
 
         .avatar-card__media img {
-          width: min(140px, 60%);
+          width: min(120px, 58%);
         }
 
         .hud__hero-portrait {
-          width: 54px;
-          height: 54px;
+          width: 50px;
+          height: 50px;
         }
 
         .summary__hero {
@@ -532,25 +548,48 @@
               <button
                 class="avatar-card"
                 type="button"
-                data-avatar="princesse"
-                data-avatar-name="Princesse Strat&egrave;ge"
+                data-avatar="magicienne"
+                data-avatar-name="Magicienne Solaire"
+                data-avatar-src="assets/magicienne.png"
+                data-avatar-alt="Portrait de la Magicienne Solaire"
+                data-selected="false"
+                aria-pressed="false"
+              >
+                <div class="avatar-card__media">
+                  <img
+                    src="assets/magicienne.png"
+                    alt="Magicienne Solaire invoquant un sort"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="avatar-card__content">
+                  <span class="avatar-card__title">Magicienne Solaire</span>
+                  <span class="avatar-card__text">
+                    Ses runes brillent autant que ses id&eacute;es pour r&eacute;soudre les &eacute;nigmes.
+                  </span>
+                </div>
+              </button>
+              <button
+                class="avatar-card"
+                type="button"
+                data-avatar="exploratrice"
+                data-avatar-name="Exploratrice Stella"
                 data-avatar-src="assets/princesse.png"
-                data-avatar-alt="Portrait de la Princesse Strat&egrave;ge"
+                data-avatar-alt="Portrait de l'Exploratrice Stella"
                 data-selected="false"
                 aria-pressed="false"
               >
                 <div class="avatar-card__media">
                   <img
                     src="assets/princesse.png"
-                    alt="Princesse Strat&egrave;ge pr&ecirc;te &agrave; lancer un sort"
+                    alt="Exploratrice Stella observant une carte &eacute;toil&eacute;e"
                     loading="lazy"
                   />
                 </div>
                 <div class="avatar-card__content">
-                  <span class="avatar-card__title">Princesse Strat&egrave;ge</span>
+                  <span class="avatar-card__title">Exploratrice Stella</span>
                   <span class="avatar-card__text">
-                    Baguette &agrave; la main et grimoires mystiques : elle orchestre la
-                    bataille avec des plans rus&eacute;s et des sorts de soutien.
+                    Elle cartographie chaque recoin et trouve le chemin le plus malin.
                   </span>
                 </div>
               </button>
