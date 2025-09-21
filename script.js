@@ -4,6 +4,7 @@ const XP_PER_CORRECT = 12;
 const XP_PER_STREAK_POINT = 4;
 const XP_PER_LEVEL = 120;
 const STORAGE_KEY = "mw-level";
+const QUEST_STORAGE_KEY = "mw-quest-selection";
 
 const APP_CONTEXT = document.body && document.body.dataset && document.body.dataset.app ? document.body.dataset.app : "launcher";
 const IS_GAME_CONTEXT = APP_CONTEXT === "game";
@@ -251,7 +252,10 @@ const CLASSIC_MODE_ID = "classic";
 const appState = {
   selectedTables: new Set(),
   selectedMode: CLASSIC_MODE_ID,
-  selectedAvatar: null
+  selectedAvatar: null,
+  avatarLocked: false,
+  questLevel: null,
+  questTables: []
 };
 
 let launcher = null;
@@ -293,7 +297,49 @@ function bootstrapContextState() {
   if (IS_GAME_CONTEXT) {
     appState.selectedMode = CLASSIC_MODE_ID;
     appState.selectedAvatar = null;
+    appState.avatarLocked = false;
+    appState.questLevel = null;
+    appState.questTables = [];
+
+    const questSetup = readQuestSelection();
+    if (questSetup) {
+      if (questSetup.hero) {
+        const hero = normalizeAvatar(questSetup.hero);
+        if (hero) {
+          appState.selectedAvatar = hero;
+          appState.avatarLocked = true;
+        }
+      }
+      if (questSetup.level && typeof questSetup.level === "object") {
+        const levelId = typeof questSetup.level.id === "string"
+          ? questSetup.level.id
+          : questSetup.level.id != null
+          ? String(questSetup.level.id)
+          : "";
+        appState.questLevel = {
+          id: levelId,
+          label: typeof questSetup.level.label === "string" ? questSetup.level.label : "",
+          shortName:
+            typeof questSetup.level.shortName === "string"
+              ? questSetup.level.shortName
+              : typeof questSetup.level.label === "string"
+              ? questSetup.level.label
+              : levelId,
+          range: typeof questSetup.level.range === "string" ? questSetup.level.range : ""
+        };
+      }
+      if (Array.isArray(questSetup.tables) && questSetup.tables.length > 0) {
+        appState.questTables = sanitizeQuestTables(questSetup.tables);
+      }
+    }
+
     applyGameQueryParameters();
+
+    if (appState.selectedTables.size === 0 && appState.questTables.length > 0) {
+      appState.questTables.forEach(function (value) {
+        appState.selectedTables.add(value);
+      });
+    }
   }
   if (!MINI_GAMES[appState.selectedMode]) {
     appState.selectedMode = CLASSIC_MODE_ID;
@@ -377,6 +423,9 @@ function parseTableValues(input) {
 }
 
 function setupLauncherElements() {
+  const setupIntroElement = document.querySelector(".setup__intro");
+  const startHintElement = document.getElementById("start-hint");
+
   const elements = {
     setupPanel: document.getElementById("setup-panel"),
     referencePanel: document.getElementById("reference-panel"),
@@ -390,7 +439,10 @@ function setupLauncherElements() {
     levelName: document.getElementById("level-name"),
     levelXp: document.getElementById("level-xp"),
     levelProgress: document.getElementById("level-progress"),
-    startHint: document.getElementById("start-hint"),
+    setupIntro: setupIntroElement,
+    setupIntroDefault: setupIntroElement ? setupIntroElement.textContent : "",
+    startHint: startHintElement,
+    startHintDefault: startHintElement ? startHintElement.textContent : "",
     modeInfo: {
       container: document.getElementById("mode-info"),
       placeholder: document.getElementById("mode-info-placeholder"),
@@ -418,6 +470,9 @@ function setupLauncherElements() {
 
   elements.avatarButtons.forEach(function (button) {
     button.addEventListener("click", function () {
+      if (appState.avatarLocked) {
+        return;
+      }
       if (button.dataset.selected === "true") {
         selectAvatar(null);
       } else {
@@ -427,6 +482,9 @@ function setupLauncherElements() {
     button.addEventListener("keydown", function (event) {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
+        if (appState.avatarLocked) {
+          return;
+        }
         if (button.dataset.selected === "true") {
           selectAvatar(null);
         } else {
@@ -551,6 +609,11 @@ function avatarDataFromButton(button) {
 
 function selectAvatar(avatarId) {
   const targetId = avatarId ? String(avatarId).trim() : "";
+  if (appState.avatarLocked) {
+    if (!targetId || (appState.selectedAvatar && appState.selectedAvatar.id !== targetId)) {
+      return;
+    }
+  }
   let selectedData = null;
 
   if (launcher && Array.isArray(launcher.avatarButtons) && launcher.avatarButtons.length > 0) {
@@ -567,8 +630,13 @@ function selectAvatar(avatarId) {
     });
   }
 
-  appState.selectedAvatar = normalizeAvatar(selectedData);
+  if (!selectedData && appState.selectedAvatar && appState.selectedAvatar.id === targetId) {
+    selectedData = appState.selectedAvatar;
+  }
+
+  appState.selectedAvatar = normalizeAvatar(selectedData) || appState.selectedAvatar;
   refreshStartAvailability();
+  updateQuestBriefing();
 }
 function renderTableChips() {
   if (!launcher.tableOptions) {
@@ -836,6 +904,25 @@ function refreshStartAvailability() {
       launcher.startHint.textContent = "Choisis un héros pour mener la mission.";
     } else if (requiresTables && !hasTables) {
       launcher.startHint.textContent = "Choisis une mission pour partir en campagne.";
+    } else if (IS_GAME_CONTEXT && hasAvatar) {
+      const mission = appState.questLevel;
+      if (mission) {
+        const missionName = mission.shortName || mission.label || mission.id || "cette mission";
+        const heroName = appState.selectedAvatar ? appState.selectedAvatar.name : "Ton héros";
+        const selectedTables = hasTables
+          ? Array.from(appState.selectedTables).sort(function (a, b) {
+              return a - b;
+            })
+          : [];
+        const tablesLabel = selectedTables.length > 0
+          ? formatTablesLabel(selectedTables)
+          : mission.range || "";
+        const suffix = tablesLabel ? " (" + tablesLabel + ")" : "";
+        launcher.startHint.textContent =
+          heroName + " est prêt·e pour « " + missionName + " »" + suffix + ". Appuie sur Partir en mission !";
+      } else {
+        launcher.startHint.textContent = "Tout est fin prêt. Appuie sur Partir en mission !";
+      }
     } else if (IS_LAUNCHER_CONTEXT) {
       launcher.startHint.textContent = mode.supportsTables
         ? "Clique pour lancer l'aventure et choisir ta mission."
@@ -845,6 +932,60 @@ function refreshStartAvailability() {
         ? "Appuie sur Partir en mission pour repousser les dragons."
         : "Appuie pour lancer ce mini-jeu.";
     }
+  }
+
+  if (IS_GAME_CONTEXT) {
+    updateQuestBriefing();
+  }
+}
+
+function updateQuestBriefing() {
+  if (!IS_GAME_CONTEXT || !launcher) {
+    return;
+  }
+
+  if (typeof document !== "undefined" && document.body) {
+    if (appState.avatarLocked) {
+      document.body.setAttribute("data-hero-locked", "true");
+    } else {
+      document.body.removeAttribute("data-hero-locked");
+    }
+  }
+
+  if (launcher.avatarButtons) {
+    launcher.avatarButtons.forEach(function (button) {
+      button.disabled = Boolean(appState.avatarLocked);
+      if (appState.avatarLocked) {
+        button.setAttribute("aria-disabled", "true");
+      } else {
+        button.removeAttribute("aria-disabled");
+      }
+    });
+  }
+
+  if (launcher.setupIntro) {
+    const hero = appState.selectedAvatar;
+    const mission = appState.questLevel;
+    const defaultText = launcher.setupIntroDefault || "";
+    if (hero && mission) {
+      const missionName = mission.shortName || mission.label || mission.id || "";
+      const tables = appState.selectedTables.size > 0
+        ? Array.from(appState.selectedTables).sort(function (a, b) {
+            return a - b;
+          })
+        : appState.questTables;
+      const tablesLabel = tables && tables.length > 0 ? formatTablesLabel(tables) : mission.range || "";
+      const suffix = tablesLabel ? " — " + tablesLabel : "";
+      launcher.setupIntro.textContent = hero.name + " mène la mission « " + missionName + " »" + suffix + ".";
+    } else if (hero) {
+      launcher.setupIntro.textContent = hero.name + " attend ton signal pour partir en mission.";
+    } else {
+      launcher.setupIntro.textContent = defaultText;
+    }
+  }
+
+  if (launcher.startHint && !appState.selectedAvatar && launcher.startHintDefault) {
+    launcher.startHint.textContent = launcher.startHintDefault;
   }
 }
 
@@ -932,7 +1073,13 @@ function updateGameHeader() {
   }
   const mode = MINI_GAMES[gameState.mode] || MINI_GAMES[CLASSIC_MODE_ID];
   const label = formatTablesLabel(gameState.tables);
-  gameElements.gameConfig.textContent = mode.title + " - " + label + " - " + QUESTION_DURATION + " s par question";
+  const details = [];
+  if (appState.questLevel && (appState.questLevel.shortName || appState.questLevel.label)) {
+    details.push(appState.questLevel.shortName || appState.questLevel.label);
+  }
+  details.push(label);
+  details.push(QUESTION_DURATION + " s par question");
+  gameElements.gameConfig.textContent = mode.title + " - " + details.join(" - ");
 }
 
 function startMatch() {
@@ -1499,6 +1646,52 @@ function updateLevelCard() {
   if (launcher.levelProgress) {
     launcher.levelProgress.style.width = Math.round(state.progress * 100) + "%";
   }
+}
+
+function readQuestSelection() {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(QUEST_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+    if (Array.isArray(parsed.tables)) {
+      parsed.tables = sanitizeQuestTables(parsed.tables);
+    } else {
+      parsed.tables = [];
+    }
+    return parsed;
+  } catch (error) {
+    return null;
+  }
+}
+
+function sanitizeQuestTables(list) {
+  if (!Array.isArray(list)) {
+    return [];
+  }
+
+  const seen = {};
+  const result = [];
+
+  list.forEach(function (value) {
+    const number = Number(value);
+    if (Number.isInteger(number) && number >= 1 && number <= 10 && !seen[number]) {
+      seen[number] = true;
+      result.push(number);
+    }
+  });
+
+  return result.sort(function (a, b) {
+    return a - b;
+  });
 }
 
 function normalizeAvatar(avatar) {

@@ -273,14 +273,25 @@
         border: 2px solid transparent;
         display: grid;
         gap: 0.7rem;
+        position: relative;
       }
 
       .chapter__header {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
         align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
+        gap: 0.75rem;
+      }
+
+      .chapter__header--interactive {
+        cursor: pointer;
+      }
+
+      .chapter__header--interactive:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.25);
+        border-radius: 16px;
+        background: rgba(108, 92, 231, 0.12);
       }
 
       .chapter__tag {
@@ -295,16 +306,60 @@
         font-size: 0.95rem;
       }
 
-      .chapter__duration {
-        font-size: 0.95rem;
-        color: var(--muted);
-        font-weight: 600;
+      .chapter__title-wrap {
+        display: grid;
+        gap: 0.2rem;
       }
 
       .chapter__title {
         margin: 0;
         font-size: 1.25rem;
         color: var(--primary-dark);
+      }
+
+      .chapter__duration {
+        font-size: 0.95rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .chapter__chevron {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(108, 92, 231, 0.18);
+        color: var(--primary-dark);
+        font-size: 0.85rem;
+        transition: transform 0.2s ease;
+      }
+
+      .chapter__body {
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .chapter__illustration {
+        margin: 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(108, 92, 231, 0.12);
+      }
+
+      .chapter__illustration img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .chapter__illustration figcaption {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.8);
       }
 
       .chapter__narrative,
@@ -326,6 +381,14 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
+      }
+
+      .chapter--collapsed .chapter__body {
+        display: none;
+      }
+
+      .chapter--collapsed .chapter__chevron {
+        transform: rotate(-90deg);
       }
 
       .chapter__link {
@@ -663,12 +726,16 @@
 
     <script>
       (function () {
+        const QUEST_STORAGE_KEY = "mw-quest-selection";
         const characters = buildCharacters();
         const levels = buildLevels();
         const levelMap = levels.reduce(function (map, level) {
           map[level.id] = level;
           return map;
         }, {});
+
+        const storedSelection = loadQuestSelection();
+        const chapterElements = [];
 
         const characterContainer = document.getElementById("character-options");
         const levelContainer = document.getElementById("level-options");
@@ -690,6 +757,23 @@
 
         renderCharacters();
         renderLevels();
+
+        const storedHeroId = storedSelection && storedSelection.hero ? storedSelection.hero.id : null;
+        const storedLevelId = storedSelection && storedSelection.level ? storedSelection.level.id : null;
+
+        if (storedHeroId) {
+          const hero = characters.find(function (item) {
+            return item.id === storedHeroId;
+          });
+          if (hero) {
+            selectHero(hero);
+          }
+        }
+
+        if (storedLevelId) {
+          selectLevel(storedLevelId);
+        }
+
         updateStartState();
 
         if (startButton) {
@@ -792,6 +876,7 @@
           if (questVisible) {
             hideQuest();
           }
+          persistSelection();
           updateStartState();
         }
 
@@ -806,6 +891,7 @@
           if (questVisible) {
             hideQuest();
           }
+          persistSelection();
           updateStartState();
         }
 
@@ -858,8 +944,14 @@
 
           if (chapterList) {
             chapterList.innerHTML = "";
+            chapterElements.length = 0;
             level.steps.forEach(function (step, index) {
-              chapterList.append(createChapter(step, index));
+              const chapter = createChapter(step, index);
+              chapterElements.push(chapter);
+              chapterList.append(chapter);
+            });
+            chapterElements.forEach(function (item, index) {
+              setChapterExpanded(item, index === 0);
             });
           }
 
@@ -895,57 +987,103 @@
           const item = document.createElement("li");
           item.className = "chapter";
           item.dataset.completed = "false";
+          item.dataset.index = String(index);
+          item.dataset.expanded = "false";
 
           const header = document.createElement("div");
-          header.className = "chapter__header";
+          header.className = "chapter__header chapter__header--interactive";
+          header.tabIndex = 0;
+          header.setAttribute("role", "button");
+          header.setAttribute("aria-expanded", "false");
 
           const tag = document.createElement("span");
           tag.className = "chapter__tag";
           tag.textContent = `Chapitre ${index + 1}`;
           header.append(tag);
 
-          if (typeof step.duration === "number" && step.duration > 0) {
-            const duration = document.createElement("span");
-            duration.className = "chapter__duration";
-            duration.textContent = `≈ ${step.duration} min`;
-            header.append(duration);
-          }
-
-          item.append(header);
+          const titleWrapper = document.createElement("div");
+          titleWrapper.className = "chapter__title-wrap";
 
           if (step.title) {
             const title = document.createElement("h3");
             title.className = "chapter__title";
             title.textContent = step.title;
-            item.append(title);
+            titleWrapper.append(title);
+          }
+
+          if (typeof step.duration === "number" && step.duration > 0) {
+            const duration = document.createElement("span");
+            duration.className = "chapter__duration";
+            duration.textContent = `≈ ${step.duration} min`;
+            titleWrapper.append(duration);
+          }
+
+          header.append(titleWrapper);
+
+          const chevron = document.createElement("span");
+          chevron.className = "chapter__chevron";
+          chevron.setAttribute("aria-hidden", "true");
+          chevron.textContent = "▾";
+          header.append(chevron);
+
+          header.addEventListener("click", function () {
+            toggleChapter(item);
+          });
+
+          header.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleChapter(item);
+            }
+          });
+
+          item.append(header);
+
+          const body = document.createElement("div");
+          body.className = "chapter__body";
+
+          if (step.image) {
+            const figure = document.createElement("figure");
+            figure.className = "chapter__illustration";
+            const image = document.createElement("img");
+            image.src = step.image;
+            image.alt = step.imageAlt || step.title || "Illustration de la mission";
+            image.loading = "lazy";
+            figure.append(image);
+            if (step.imageCaption) {
+              const caption = document.createElement("figcaption");
+              caption.textContent = step.imageCaption;
+              figure.append(caption);
+            }
+            body.append(figure);
           }
 
           if (step.narrative) {
             const narrative = document.createElement("p");
             narrative.className = "chapter__narrative";
             narrative.textContent = formatStory(step.narrative);
-            item.append(narrative);
+            body.append(narrative);
           }
 
           if (step.game) {
             const game = document.createElement("p");
             game.className = "chapter__game";
             game.innerHTML = `<strong>Jeu :</strong> ${step.game}`;
-            item.append(game);
+            body.append(game);
           }
 
           if (step.tableSummary) {
             const tables = document.createElement("p");
             tables.className = "chapter__meta";
             tables.textContent = step.tableSummary;
-            item.append(tables);
+            body.append(tables);
           }
 
           if (step.tip) {
             const tip = document.createElement("p");
             tip.className = "chapter__tip";
             tip.textContent = step.tip;
-            item.append(tip);
+            body.append(tip);
           }
 
           const actions = document.createElement("div");
@@ -972,11 +1110,66 @@
             item.dataset.completed = nextState ? "true" : "false";
             mark.textContent = nextState ? "Chapitre terminé ✔" : "Marquer comme terminé";
             mark.setAttribute("aria-pressed", nextState ? "true" : "false");
+            if (nextState) {
+              expandChapterByIndex(index + 1, true);
+            } else {
+              collapseChaptersAfter(index);
+            }
           });
           actions.append(mark);
 
-          item.append(actions);
+          body.append(actions);
+          item.append(body);
           return item;
+        }
+
+        function setChapterExpanded(item, expanded) {
+          if (!item) {
+            return;
+          }
+          item.dataset.expanded = expanded ? "true" : "false";
+          updateChapterExpansion(item);
+        }
+
+        function toggleChapter(item) {
+          if (!item) {
+            return;
+          }
+          const isExpanded = item.dataset.expanded === "true";
+          setChapterExpanded(item, !isExpanded);
+        }
+
+        function expandChapterByIndex(index, focus) {
+          if (index < 0 || index >= chapterElements.length) {
+            return;
+          }
+          const target = chapterElements[index];
+          setChapterExpanded(target, true);
+          if (focus && target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+
+        function collapseChaptersAfter(index) {
+          for (let i = index + 1; i < chapterElements.length; i += 1) {
+            setChapterExpanded(chapterElements[i], false);
+          }
+        }
+
+        function updateChapterExpansion(item) {
+          if (!item) {
+            return;
+          }
+          const header = item.querySelector(".chapter__header");
+          const body = item.querySelector(".chapter__body");
+          const isExpanded = item.dataset.expanded === "true";
+          item.classList.toggle("chapter--collapsed", !isExpanded);
+          if (header) {
+            header.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+          }
+          if (body) {
+            body.hidden = !isExpanded;
+          }
         }
 
         function estimateTotal(level) {
@@ -996,6 +1189,95 @@
             return template;
           }
           return template.replace(/\{hero\}/g, selectedHero.name);
+        }
+
+        function persistSelection() {
+          if (typeof window === "undefined" || !window.localStorage) {
+            return;
+          }
+
+          const level = selectedLevelId ? levelMap[selectedLevelId] : null;
+          const heroData = selectedHero
+            ? {
+                id: selectedHero.id,
+                name: selectedHero.name,
+                image: selectedHero.image,
+                alt: selectedHero.alt
+              }
+            : null;
+
+          const levelData = level
+            ? {
+                id: level.id,
+                label: level.label,
+                shortName: level.shortName,
+                range: level.range
+              }
+            : selectedLevelId
+            ? { id: selectedLevelId }
+            : null;
+
+          const tables = level && Array.isArray(level.missionTables) ? level.missionTables : [];
+
+          if (!heroData && !levelData) {
+            window.localStorage.removeItem(QUEST_STORAGE_KEY);
+            return;
+          }
+
+          try {
+            window.localStorage.setItem(
+              QUEST_STORAGE_KEY,
+              JSON.stringify({
+                hero: heroData,
+                level: levelData,
+                tables: tables
+              })
+            );
+          } catch (error) {
+            // ignore storage errors (quota, private mode...)
+          }
+        }
+
+        function loadQuestSelection() {
+          if (typeof window === "undefined" || !window.localStorage) {
+            return null;
+          }
+
+          try {
+            const raw = window.localStorage.getItem(QUEST_STORAGE_KEY);
+            if (!raw) {
+              return null;
+            }
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== "object") {
+              return null;
+            }
+            if (Array.isArray(parsed.tables)) {
+              const sanitized = [];
+              const seen = {};
+              parsed.tables.forEach(function (value) {
+                const number = Number(value);
+                if (
+                  Number.isInteger(number) &&
+                  number >= 1 &&
+                  number <= 10 &&
+                  !seen[number]
+                ) {
+                  seen[number] = true;
+                  sanitized.push(number);
+                }
+              });
+              sanitized.sort(function (a, b) {
+                return a - b;
+              });
+              parsed.tables = sanitized;
+            } else {
+              parsed.tables = [];
+            }
+            return parsed;
+          } catch (error) {
+            return null;
+          }
         }
 
         function buildCharacters() {
@@ -1037,6 +1319,7 @@
               summary: "Idéal pour consolider les bases en douceur.",
               intro: "Les feux follets ont volé le cristal du village. {hero} doit le récupérer avant que la nuit ne tombe.",
               conclusion: "Grâce à sa ténacité, {hero} ramène le cristal et la forêt s'illumine de nouveau.",
+              missionTables: [1, 2, 3],
               steps: [
                 {
                   id: "grimoire",
@@ -1047,7 +1330,10 @@
                   actionLabel: "Ouvrir Memory multi",
                   actionUrl: buildMemoryUrl(2),
                   tableSummary: "Table ciblée : 2 (rappels des tables 1 et 3).",
-                  tip: "Assemble les 6 paires pour reconstituer la carte lumineuse."
+                  tip: "Assemble les 6 paires pour reconstituer la carte lumineuse.",
+                  image: "assets/chateau.png",
+                  imageAlt: "Campement illuminé dans une clairière enchantée",
+                  imageCaption: "Le bivouac reprend vie quand les fragments du grimoire sont réunis."
                 },
                 {
                   id: "clairiere",
@@ -1058,7 +1344,10 @@
                   actionLabel: "Lancer Roulette magique",
                   actionUrl: buildRouletteUrl([1, 2, 3]),
                   tableSummary: "Tables 1 à 3, avec quelques défis de la table 4.",
-                  tip: "15 secondes par question, ne laisse pas la clairière s'assombrir !"
+                  tip: "15 secondes par question, ne laisse pas la clairière s'assombrir !",
+                  image: "assets/gobelin.png",
+                  imageAlt: "Gobelin filant avec une lanterne magique",
+                  imageCaption: "Cours après les gobelins avant qu'ils ne referment les portails."
                 },
                 {
                   id: "pont",
@@ -1069,7 +1358,10 @@
                   actionLabel: "Défier l'esprit",
                   actionUrl: buildTrueFalseUrl([1, 2, 3, 4], "apprenti"),
                   tableSummary: "Tables 1 à 3 et quelques touches de la table 4.",
-                  tip: "Tu disposes de 12 secondes pour valider chaque sort."
+                  tip: "Tu disposes de 12 secondes pour valider chaque sort.",
+                  image: "assets/dragon.png",
+                  imageAlt: "Esprit draconique sculpté gardant un pont de pierre",
+                  imageCaption: "Réponds juste pour que l'esprit du pont te laisse passer."
                 }
               ]
             },
@@ -1081,6 +1373,7 @@
               summary: "Parfait pour gagner en rythme avant les grands défis.",
               intro: "Les trolls de pierre ont bloqué les mines obsidiennes. {hero} doit rouvrir le passage avant la prochaine lune.",
               conclusion: "{hero} libère les cristaux et les mineurs peuvent à nouveau voyager.",
+              missionTables: [4, 5, 6],
               steps: [
                 {
                   id: "sentinelles",
@@ -1091,7 +1384,10 @@
                   actionLabel: "Ouvrir Memory multi",
                   actionUrl: buildMemoryUrl(5),
                   tableSummary: "Table ciblée : 5 (rappels des tables 4 à 6).",
-                  tip: "Retrouve vite les 6 paires gardées par les trolls."
+                  tip: "Retrouve vite les 6 paires gardées par les trolls.",
+                  image: "assets/chevalier noir.png",
+                  imageAlt: "Statue de chevalier sombre gardant l'entrée d'une mine",
+                  imageCaption: "Rassemble les runes gravées sur les sentinelles de pierre."
                 },
                 {
                   id: "ascension",
@@ -1102,7 +1398,10 @@
                   actionLabel: "Lancer Roulette magique",
                   actionUrl: buildRouletteUrl([4, 5, 6]),
                   tableSummary: "Tables 4 à 6 avec quelques incursions de la table 7.",
-                  tip: "15 secondes par question : maintiens le rythme d'un chevalier."
+                  tip: "15 secondes par question : maintiens le rythme d'un chevalier.",
+                  image: "assets/chevalier.png",
+                  imageAlt: "Chevalier gravissant un passage escarpé",
+                  imageCaption: "Grimpe vers les sommets obsidiens sans perdre ton souffle."
                 },
                 {
                   id: "coeur",
@@ -1113,7 +1412,10 @@
                   actionLabel: "Affronter le golem",
                   actionUrl: buildTrueFalseUrl([4, 5, 6, 7], "chevalier"),
                   tableSummary: "Tables 4 à 6 et quelques questions de la table 7.",
-                  tip: "8 secondes par question, reste concentré jusqu'au bout."
+                  tip: "8 secondes par question, reste concentré jusqu'au bout.",
+                  image: "assets/coffre.png",
+                  imageAlt: "Relique magique reposant dans un coffre ancien",
+                  imageCaption: "Le cœur de la montagne renferme un trésor qui réagit à tes réponses."
                 }
               ]
             },
@@ -1125,6 +1427,7 @@
               summary: "Une mission intense pour maîtriser les tables élevées.",
               intro: "Le désert des Chimères menace d'engloutir l'oasis sacrée. {hero} doit sceller la faille avant le coucher du soleil.",
               conclusion: "Le dragon apaise la tempête et {hero} gagne une relique ancestrale.",
+              missionTables: [7, 8, 9],
               steps: [
                 {
                   id: "ruines",
@@ -1135,7 +1438,10 @@
                   actionLabel: "Ouvrir Memory multi",
                   actionUrl: buildMemoryUrl(8),
                   tableSummary: "Table ciblée : 8 (rappels des tables 7 à 9).",
-                  tip: "Assemble les paires avant que la tempête de sable n'arrive."
+                  tip: "Assemble les paires avant que la tempête de sable n'arrive.",
+                  image: "assets/sorciere.png",
+                  imageAlt: "Mage des sables levant un bâton runique",
+                  imageCaption: "Collecte les glyphes perdus dans les ruines brûlantes."
                 },
                 {
                   id: "mirages",
@@ -1146,7 +1452,10 @@
                   actionLabel: "Lancer Roulette magique",
                   actionUrl: buildRouletteUrl([7, 8, 9]),
                   tableSummary: "Tables 7 à 9 uniquement.",
-                  tip: "15 secondes par question, garde ton sang-froid."
+                  tip: "15 secondes par question, garde ton sang-froid.",
+                  image: "assets/princesse.png",
+                  imageAlt: "Exploratrice avançant dans un désert étincelant",
+                  imageCaption: "Fonce entre les mirages sans perdre le fil des multiplications."
                 },
                 {
                   id: "temple",
@@ -1157,7 +1466,10 @@
                   actionLabel: "Affronter le dragon",
                   actionUrl: buildTrueFalseUrl([7, 8, 9], "dragon"),
                   tableSummary: "Tables 7 à 9 uniquement.",
-                  tip: "5 secondes par question : réponds sans hésiter !"
+                  tip: "5 secondes par question : réponds sans hésiter !",
+                  image: "assets/dragon.png",
+                  imageAlt: "Dragon de sable déployant ses ailes devant un temple",
+                  imageCaption: "Triomphe du dragon pour sceller le désert des Chimères."
                 }
               ]
             }
