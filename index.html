@@ -1,110 +1,383 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Magic Wheel Multiplications</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Magic Wheel - Quête des multiplications</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --home-bg: linear-gradient(160deg, #f5f3ff 0%, #f0f9ff 45%, #fff5fb 100%);
-        --surface: #ffffff;
-        --surface-strong: rgba(255, 255, 255, 0.8);
+        color-scheme: light;
+        --bg: linear-gradient(160deg, #f5f3ff 0%, #f0f9ff 45%, #fff5fb 100%);
+        --surface: rgba(255, 255, 255, 0.92);
+        --surface-strong: #ffffff;
         --primary: #6c5ce7;
-        --primary-dark: #5847c8;
+        --primary-dark: #4f3ac8;
         --accent: #ff7f50;
         --muted: #5e5a80;
         --text: #2f1c6a;
+        --success: #00b894;
         --shadow: 0 30px 70px -40px rgba(65, 48, 110, 0.35);
-        --shadow-soft: 0 18px 40px -32px rgba(65, 48, 110, 0.25);
+        --shadow-soft: 0 18px 45px -38px rgba(65, 48, 110, 0.25);
       }
 
-      body.home {
+      * {
+        box-sizing: border-box;
+      }
+
+      body.quest-home {
         margin: 0;
         min-height: 100vh;
-        background: var(--home-bg);
-        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg);
         color: var(--text);
+        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
         display: flex;
         flex-direction: column;
-        align-items: stretch;
       }
 
-      .home__wrapper {
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      main.quest {
         width: min(1100px, 92%);
         margin: 0 auto;
         padding: clamp(2rem, 6vw, 4rem) 0 4rem;
         display: grid;
-        gap: clamp(2rem, 5vw, 3.5rem);
+        gap: clamp(1.75rem, 4vw, 2.8rem);
+        flex: 1;
       }
 
-      .home__hero {
+      .panel {
         background: var(--surface);
-        border-radius: 32px;
-        padding: clamp(2rem, 6vw, 3.5rem);
+        border-radius: 28px;
+        padding: clamp(1.6rem, 4vw, 2.6rem);
         box-shadow: var(--shadow);
         display: grid;
-        gap: 1.5rem;
-        text-align: center;
+        gap: 1.2rem;
       }
 
-      .home__badge {
+      .intro {
+        text-align: center;
+        background: var(--surface-strong);
+        box-shadow: var(--shadow);
+      }
+
+      .intro__badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        margin: 0 auto;
-        padding: 0.35rem 1.25rem;
+        justify-content: center;
+        padding: 0.35rem 1.3rem;
         border-radius: 999px;
         background: rgba(108, 92, 231, 0.1);
         color: var(--primary-dark);
-        font-size: 0.95rem;
         font-weight: 600;
+        font-size: 0.95rem;
       }
 
-      .home__hero h1 {
+      .intro h1 {
         margin: 0;
-        font-size: clamp(2.4rem, 5vw, 3.8rem);
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
         color: var(--primary);
       }
 
-      .home__hero p {
+      .intro p {
         margin: 0;
         font-size: clamp(1.1rem, 3vw, 1.35rem);
         color: var(--muted);
       }
 
-      .home__cta {
-        display: inline-flex;
-        justify-content: center;
+      h2 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        color: var(--primary-dark);
+      }
+
+      .selector-grid,
+      .level-grid {
+        display: grid;
+        gap: clamp(1rem, 3vw, 1.6rem);
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      button.character-card,
+      button.level-card {
+        border: 2px solid transparent;
+        border-radius: 24px;
+        padding: clamp(1.1rem, 3vw, 1.5rem);
+        text-align: left;
+        background: var(--surface);
+        box-shadow: var(--shadow-soft);
+        color: inherit;
+        font-family: inherit;
+        cursor: pointer;
+        display: grid;
+        gap: 0.65rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+      }
+
+      button.character-card:hover,
+      button.level-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+
+      button.character-card[data-selected="true"],
+      button.level-card[data-selected="true"] {
+        border-color: var(--primary);
+        background: var(--surface-strong);
+        box-shadow: var(--shadow);
+      }
+
+      .character-card__portrait {
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(108, 92, 231, 0.08);
+        aspect-ratio: 4 / 3;
+        display: flex;
         align-items: center;
-        gap: 0.5rem;
-        margin: 0 auto;
-        padding: 0.9rem 1.9rem;
-        border-radius: 18px;
+        justify-content: center;
+      }
+
+      .character-card__portrait img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .character-card__name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .character-card__role {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .character-card__text {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .level-card__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 127, 80, 0.12);
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .level-card__title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .level-card__range {
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .level-card__text {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .panel--launch {
+        justify-items: center;
+        text-align: center;
+      }
+
+      .panel__note {
+        margin: 0;
+        font-size: 1.05rem;
+        color: var(--muted);
+      }
+
+      .primary-btn {
         border: none;
+        border-radius: 18px;
+        padding: 0.95rem 2.4rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: linear-gradient(120deg, var(--primary), #8e7bff);
+        color: #fff;
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        font-family: inherit;
+      }
+
+      .primary-btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+
+      .primary-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .quest-story {
+        background: var(--surface-strong);
+      }
+
+      .quest-story__header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .quest-story__duration {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .quest-story__intro,
+      .quest-story__conclusion {
+        margin: 0;
+        font-size: 1.05rem;
+        color: var(--muted);
+      }
+
+      .chapter-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1.1rem;
+      }
+
+      .chapter {
+        background: rgba(108, 92, 231, 0.08);
+        border-radius: 22px;
+        padding: clamp(1.2rem, 3vw, 1.6rem);
+        border: 2px solid transparent;
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .chapter__header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .chapter__tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(108, 92, 231, 0.18);
+        color: var(--primary-dark);
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .chapter__duration {
+        font-size: 0.95rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .chapter__title {
+        margin: 0;
+        font-size: 1.25rem;
+        color: var(--primary-dark);
+      }
+
+      .chapter__narrative,
+      .chapter__meta,
+      .chapter__tip {
+        margin: 0;
+        font-size: 0.98rem;
+        color: var(--muted);
+      }
+
+      .chapter__game {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .chapter__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .chapter__link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.6rem;
+        border-radius: 18px;
         background: var(--primary);
         color: #fff;
         font-weight: 700;
-        font-size: 1.1rem;
         text-decoration: none;
         box-shadow: var(--shadow-soft);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
       }
 
-      .home__cta:hover {
+      .chapter__link:hover {
         transform: translateY(-3px);
-        box-shadow: 0 22px 55px -36px rgba(108, 92, 231, 0.5);
+        box-shadow: var(--shadow);
       }
 
-      .home__section {
-        display: grid;
-        gap: 1.75rem;
+      .chapter__mark {
+        border: none;
+        border-radius: 18px;
+        padding: 0.75rem 1.4rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        background: rgba(108, 92, 231, 0.12);
+        color: var(--primary-dark);
+        cursor: pointer;
+        font-family: inherit;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+      }
+
+      .chapter__mark:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .chapter[data-completed="true"] {
+        border-color: var(--success);
+        background: rgba(0, 184, 148, 0.08);
+      }
+
+      .chapter[data-completed="true"] .chapter__tag {
+        background: rgba(0, 184, 148, 0.15);
+        color: var(--success);
+      }
+
+      .chapter[data-completed="true"] .chapter__mark {
+        background: rgba(0, 184, 148, 0.12);
+        color: var(--success);
       }
 
       .section-header {
@@ -115,416 +388,829 @@
         gap: 0.75rem;
       }
 
-      .section-header h2 {
-        margin: 0;
-        font-size: clamp(1.9rem, 4vw, 2.4rem);
-        color: var(--primary-dark);
-      }
-
       .section-header p {
         margin: 0;
         color: var(--muted);
       }
 
-      .card-grid {
-        display: grid;
-        gap: clamp(1.2rem, 3vw, 1.75rem);
+      .table-section {
+        background: var(--surface-strong);
       }
 
-      .card-grid--games {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      }
-
-      .card-grid--courses {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      }
-
-      .card-grid--tables {
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      }
-
-      .card {
-        background: var(--surface);
-        border-radius: 24px;
-        padding: clamp(1.35rem, 3vw, 1.75rem);
-        box-shadow: var(--shadow-soft);
+      .table-grid {
         display: grid;
         gap: 1rem;
-        position: relative;
-        overflow: hidden;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       }
 
-      .card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(140deg, rgba(108, 92, 231, 0.06), transparent 60%);
-        pointer-events: none;
-      }
-
-      .card__icon {
-        font-size: 2rem;
-      }
-
-      .card h3 {
-        margin: 0;
-        font-size: 1.35rem;
-        color: var(--primary-dark);
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.98rem;
-        line-height: 1.55;
-      }
-
-      .card__actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-
-      .pill {
-        display: inline-flex;
-        align-items: center;
+      .table-card {
+        background: rgba(108, 92, 231, 0.08);
+        border-radius: 20px;
+        padding: 1.2rem 1.4rem;
+        display: grid;
         gap: 0.5rem;
-        padding: 0.55rem 1.2rem;
-        border-radius: 999px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: transform 0.15s ease;
       }
 
-      .pill--primary {
-        background: var(--primary);
-        color: #fff;
-      }
-
-      .pill--ghost {
-        background: rgba(108, 92, 231, 0.12);
+      .table-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
         color: var(--primary-dark);
-      }
-
-      .pill:hover {
-        transform: translateY(-2px);
       }
 
       .table-card ul {
         margin: 0;
-        padding-left: 1.25rem;
-        display: grid;
-        gap: 0.2rem;
-        font-size: 0.95rem;
+        padding-left: 1.1rem;
         color: var(--muted);
+        display: grid;
+        gap: 0.15rem;
+        font-size: 0.95rem;
       }
 
-      footer.home__footer {
-        margin-top: auto;
-        padding: 2rem 0 3rem;
+      footer.quest-footer {
+        margin: 0;
+        padding: 2.2rem 0 2.6rem;
         text-align: center;
-        color: var(--muted);
         font-size: 0.95rem;
+        color: var(--muted);
       }
 
       @media (max-width: 720px) {
-        .home__hero {
-          text-align: left;
+        .quest-story__header {
+          flex-direction: column;
+          align-items: flex-start;
         }
-        .home__cta {
-          justify-content: flex-start;
-          margin-left: 0;
+        .chapter__actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .chapter__link,
+        .chapter__mark {
+          width: 100%;
+          justify-content: center;
         }
       }
     </style>
   </head>
-  <body class="home">
-    <div class="home__wrapper">
-      <header class="home__hero">
-        <span class="home__badge">🎉 Bienvenue sur Magic Wheel</span>
-        <h1>Apprendre les multiplications devient un jeu</h1>
+  <body class="quest-home">
+    <main class="quest">
+      <section class="panel intro">
+        <span class="intro__badge">✨ Nouvelle aventure</span>
+        <h1>Choisis ton héros et lance la quête</h1>
         <p>
-          Choisis un mini-jeu, revois les cours pas &agrave; pas puis explore toutes les tables.
-          Pr&ecirc;t&middot;e &agrave; tourner la roue de la r&eacute;ussite ?
+          Trois mini-jeux reliés par une histoire à vivre en moins de 10 minutes.
+          Sélectionne ton compagnon et le niveau pour partir en mission.
         </p>
-        <a class="home__cta" href="#jeux">Voir les jeux</a>
-      </header>
-
-      <section class="home__section" id="jeux">
-        <div class="section-header">
-          <h2>🎮 Les jeux</h2>
-          <p>Entra&icirc;ne-toi en variant les d&eacute;fis pour devenir un&middot;e as des tables.</p>
-        </div>
-        <div class="card-grid card-grid--games">
-          <article class="card">
-            <div class="card__icon">🎯</div>
-            <h3>Roulette 15 s</h3>
-            <p>
-              10 questions chronom&eacute;tr&eacute;es, 4 propositions m&eacute;lang&eacute;es et un compteur de combos
-              pour faire exploser ton score.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="jeu.html">Jouer</a>
-              <span class="pill pill--ghost">15 secondes par question</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card__icon">🟩</div>
-            <h3>Bingo multiples</h3>
-            <p>
-              Une grille 4&times;4 de multiples de 10 : clique les bons produits, verrouille les
-              cases et vise le bingo.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="bingo.html">Lancer</a>
-              <span class="pill pill--ghost">Rapidit&eacute; et observation</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card__icon">⚡</div>
-            <h3>Vrai ou Faux</h3>
-            <p>
-              3 secondes pour dire si le r&eacute;sultat propos&eacute; est juste ou faux. 10 calculs pour
-              tester tes r&eacute;flexes.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="vf.html">Tester</a>
-              <span class="pill pill--ghost">Chrono individuel</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card__icon">🚀</div>
-            <h3>Course aux r&eacute;ponses</h3>
-            <p>
-              Choisis une table, laisse les calculs d&eacute;filer et valide tous les produits parmi les
-              r&eacute;ponses m&eacute;lang&eacute;es.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="table-rush.html">Cours !</a>
-              <span class="pill pill--ghost">10 produits &agrave; encha&icirc;ner</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card__icon">🧠</div>
-            <h3>Memory multi</h3>
-            <p>
-              Retourne les cartes pour associer op&eacute;rations et r&eacute;sultats. Un chrono et un compteur
-              de coups pour te challenger.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="memory.html">Retourner</a>
-              <span class="pill pill--ghost">6 paires &agrave; retrouver</span>
-            </div>
-          </article>
-        </div>
       </section>
 
-      <section class="home__section" id="cours">
-        <div class="section-header">
-          <h2>📚 Les cours</h2>
-          <p>Comprends les astuces des tables avant de passer en mode d&eacute;fi.</p>
-        </div>
-        <div class="card-grid card-grid--courses">
-          <article class="card">
-            <div class="card__icon">📝</div>
-            <h3>Apprendre pas &agrave; pas</h3>
-            <p>
-              Des explications simples, des m&eacute;motechniques et des jeux de r&eacute;p&eacute;tition pour que
-              chaque table devienne un r&eacute;flexe.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--primary" href="apprendre.html">Ouvrir le cours</a>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__icon">🧭</div>
-            <h3>Id&eacute;es de routines</h3>
-            <p>
-              5 minutes matin et soir, des quiz rapides et des cartes &agrave; emporter : compose ton
-              entrainement sur mesure.
-            </p>
-            <div class="card__actions">
-              <a class="pill pill--ghost" href="apprendre.html#astuces">Lire les conseils</a>
-            </div>
-          </article>
-        </div>
+      <section class="panel">
+        <h2>1. Choisis ton personnage</h2>
+        <p class="panel__note">
+          Chaque héros dispose de son style : trouve celui qui te motive le plus.
+        </p>
+        <div class="selector-grid" id="character-options"></div>
       </section>
 
-      <section class="home__section" id="tables">
-        <div class="section-header">
-          <h2>🔢 Les tables</h2>
-          <p>Garde cette r&eacute;f&eacute;rence &agrave; port&eacute;e de main pour r&eacute;viser en un clin d&apos;&oelig;il.</p>
+      <section class="panel">
+        <h2>2. Choisis le niveau</h2>
+        <p class="panel__note">
+          Les tables proposées s'adaptent à ton choix pour garder une difficulté cohérente.
+        </p>
+        <div class="level-grid" id="level-options"></div>
+      </section>
+
+      <section class="panel panel--launch">
+        <p class="panel__note" id="setup-note">
+          Choisis un héros et un niveau pour préparer la mission.
+        </p>
+        <button class="primary-btn" id="start-quest" type="button" disabled>
+          Lancer la quête
+        </button>
+      </section>
+
+      <section class="panel quest-story" id="quest-story" hidden>
+        <div class="quest-story__header">
+          <h2 id="quest-story-title">Ta légende commence</h2>
+          <p class="quest-story__duration" id="quest-duration"></p>
         </div>
-        <div class="card-grid card-grid--tables">
-          <article class="card table-card">
+        <p class="quest-story__intro" id="quest-story-intro"></p>
+        <ol class="chapter-list" id="quest-chapters"></ol>
+        <p class="quest-story__conclusion" id="quest-conclusion"></p>
+      </section>
+
+      <section class="panel table-section" id="tables">
+        <div class="section-header">
+          <h2>🔢 Tables de référence</h2>
+          <p>Garde ce mémo sous la main pendant ta quête.</p>
+        </div>
+        <div class="table-grid">
+          <article class="table-card">
             <h3>Table de 1</h3>
             <ul>
-              <li>1 &times; 1 = 1</li>
-              <li>1 &times; 2 = 2</li>
-              <li>1 &times; 3 = 3</li>
-              <li>1 &times; 4 = 4</li>
-              <li>1 &times; 5 = 5</li>
-              <li>1 &times; 6 = 6</li>
-              <li>1 &times; 7 = 7</li>
-              <li>1 &times; 8 = 8</li>
-              <li>1 &times; 9 = 9</li>
-              <li>1 &times; 10 = 10</li>
+              <li>1 × 1 = 1</li>
+              <li>1 × 2 = 2</li>
+              <li>1 × 3 = 3</li>
+              <li>1 × 4 = 4</li>
+              <li>1 × 5 = 5</li>
+              <li>1 × 6 = 6</li>
+              <li>1 × 7 = 7</li>
+              <li>1 × 8 = 8</li>
+              <li>1 × 9 = 9</li>
+              <li>1 × 10 = 10</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 2</h3>
             <ul>
-              <li>2 &times; 1 = 2</li>
-              <li>2 &times; 2 = 4</li>
-              <li>2 &times; 3 = 6</li>
-              <li>2 &times; 4 = 8</li>
-              <li>2 &times; 5 = 10</li>
-              <li>2 &times; 6 = 12</li>
-              <li>2 &times; 7 = 14</li>
-              <li>2 &times; 8 = 16</li>
-              <li>2 &times; 9 = 18</li>
-              <li>2 &times; 10 = 20</li>
+              <li>2 × 1 = 2</li>
+              <li>2 × 2 = 4</li>
+              <li>2 × 3 = 6</li>
+              <li>2 × 4 = 8</li>
+              <li>2 × 5 = 10</li>
+              <li>2 × 6 = 12</li>
+              <li>2 × 7 = 14</li>
+              <li>2 × 8 = 16</li>
+              <li>2 × 9 = 18</li>
+              <li>2 × 10 = 20</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 3</h3>
             <ul>
-              <li>3 &times; 1 = 3</li>
-              <li>3 &times; 2 = 6</li>
-              <li>3 &times; 3 = 9</li>
-              <li>3 &times; 4 = 12</li>
-              <li>3 &times; 5 = 15</li>
-              <li>3 &times; 6 = 18</li>
-              <li>3 &times; 7 = 21</li>
-              <li>3 &times; 8 = 24</li>
-              <li>3 &times; 9 = 27</li>
-              <li>3 &times; 10 = 30</li>
+              <li>3 × 1 = 3</li>
+              <li>3 × 2 = 6</li>
+              <li>3 × 3 = 9</li>
+              <li>3 × 4 = 12</li>
+              <li>3 × 5 = 15</li>
+              <li>3 × 6 = 18</li>
+              <li>3 × 7 = 21</li>
+              <li>3 × 8 = 24</li>
+              <li>3 × 9 = 27</li>
+              <li>3 × 10 = 30</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 4</h3>
             <ul>
-              <li>4 &times; 1 = 4</li>
-              <li>4 &times; 2 = 8</li>
-              <li>4 &times; 3 = 12</li>
-              <li>4 &times; 4 = 16</li>
-              <li>4 &times; 5 = 20</li>
-              <li>4 &times; 6 = 24</li>
-              <li>4 &times; 7 = 28</li>
-              <li>4 &times; 8 = 32</li>
-              <li>4 &times; 9 = 36</li>
-              <li>4 &times; 10 = 40</li>
+              <li>4 × 1 = 4</li>
+              <li>4 × 2 = 8</li>
+              <li>4 × 3 = 12</li>
+              <li>4 × 4 = 16</li>
+              <li>4 × 5 = 20</li>
+              <li>4 × 6 = 24</li>
+              <li>4 × 7 = 28</li>
+              <li>4 × 8 = 32</li>
+              <li>4 × 9 = 36</li>
+              <li>4 × 10 = 40</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 5</h3>
             <ul>
-              <li>5 &times; 1 = 5</li>
-              <li>5 &times; 2 = 10</li>
-              <li>5 &times; 3 = 15</li>
-              <li>5 &times; 4 = 20</li>
-              <li>5 &times; 5 = 25</li>
-              <li>5 &times; 6 = 30</li>
-              <li>5 &times; 7 = 35</li>
-              <li>5 &times; 8 = 40</li>
-              <li>5 &times; 9 = 45</li>
-              <li>5 &times; 10 = 50</li>
+              <li>5 × 1 = 5</li>
+              <li>5 × 2 = 10</li>
+              <li>5 × 3 = 15</li>
+              <li>5 × 4 = 20</li>
+              <li>5 × 5 = 25</li>
+              <li>5 × 6 = 30</li>
+              <li>5 × 7 = 35</li>
+              <li>5 × 8 = 40</li>
+              <li>5 × 9 = 45</li>
+              <li>5 × 10 = 50</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 6</h3>
             <ul>
-              <li>6 &times; 1 = 6</li>
-              <li>6 &times; 2 = 12</li>
-              <li>6 &times; 3 = 18</li>
-              <li>6 &times; 4 = 24</li>
-              <li>6 &times; 5 = 30</li>
-              <li>6 &times; 6 = 36</li>
-              <li>6 &times; 7 = 42</li>
-              <li>6 &times; 8 = 48</li>
-              <li>6 &times; 9 = 54</li>
-              <li>6 &times; 10 = 60</li>
+              <li>6 × 1 = 6</li>
+              <li>6 × 2 = 12</li>
+              <li>6 × 3 = 18</li>
+              <li>6 × 4 = 24</li>
+              <li>6 × 5 = 30</li>
+              <li>6 × 6 = 36</li>
+              <li>6 × 7 = 42</li>
+              <li>6 × 8 = 48</li>
+              <li>6 × 9 = 54</li>
+              <li>6 × 10 = 60</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 7</h3>
             <ul>
-              <li>7 &times; 1 = 7</li>
-              <li>7 &times; 2 = 14</li>
-              <li>7 &times; 3 = 21</li>
-              <li>7 &times; 4 = 28</li>
-              <li>7 &times; 5 = 35</li>
-              <li>7 &times; 6 = 42</li>
-              <li>7 &times; 7 = 49</li>
-              <li>7 &times; 8 = 56</li>
-              <li>7 &times; 9 = 63</li>
-              <li>7 &times; 10 = 70</li>
+              <li>7 × 1 = 7</li>
+              <li>7 × 2 = 14</li>
+              <li>7 × 3 = 21</li>
+              <li>7 × 4 = 28</li>
+              <li>7 × 5 = 35</li>
+              <li>7 × 6 = 42</li>
+              <li>7 × 7 = 49</li>
+              <li>7 × 8 = 56</li>
+              <li>7 × 9 = 63</li>
+              <li>7 × 10 = 70</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 8</h3>
             <ul>
-              <li>8 &times; 1 = 8</li>
-              <li>8 &times; 2 = 16</li>
-              <li>8 &times; 3 = 24</li>
-              <li>8 &times; 4 = 32</li>
-              <li>8 &times; 5 = 40</li>
-              <li>8 &times; 6 = 48</li>
-              <li>8 &times; 7 = 56</li>
-              <li>8 &times; 8 = 64</li>
-              <li>8 &times; 9 = 72</li>
-              <li>8 &times; 10 = 80</li>
+              <li>8 × 1 = 8</li>
+              <li>8 × 2 = 16</li>
+              <li>8 × 3 = 24</li>
+              <li>8 × 4 = 32</li>
+              <li>8 × 5 = 40</li>
+              <li>8 × 6 = 48</li>
+              <li>8 × 7 = 56</li>
+              <li>8 × 8 = 64</li>
+              <li>8 × 9 = 72</li>
+              <li>8 × 10 = 80</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 9</h3>
             <ul>
-              <li>9 &times; 1 = 9</li>
-              <li>9 &times; 2 = 18</li>
-              <li>9 &times; 3 = 27</li>
-              <li>9 &times; 4 = 36</li>
-              <li>9 &times; 5 = 45</li>
-              <li>9 &times; 6 = 54</li>
-              <li>9 &times; 7 = 63</li>
-              <li>9 &times; 8 = 72</li>
-              <li>9 &times; 9 = 81</li>
-              <li>9 &times; 10 = 90</li>
+              <li>9 × 1 = 9</li>
+              <li>9 × 2 = 18</li>
+              <li>9 × 3 = 27</li>
+              <li>9 × 4 = 36</li>
+              <li>9 × 5 = 45</li>
+              <li>9 × 6 = 54</li>
+              <li>9 × 7 = 63</li>
+              <li>9 × 8 = 72</li>
+              <li>9 × 9 = 81</li>
+              <li>9 × 10 = 90</li>
             </ul>
           </article>
-          <article class="card table-card">
+          <article class="table-card">
             <h3>Table de 10</h3>
             <ul>
-              <li>10 &times; 1 = 10</li>
-              <li>10 &times; 2 = 20</li>
-              <li>10 &times; 3 = 30</li>
-              <li>10 &times; 4 = 40</li>
-              <li>10 &times; 5 = 50</li>
-              <li>10 &times; 6 = 60</li>
-              <li>10 &times; 7 = 70</li>
-              <li>10 &times; 8 = 80</li>
-              <li>10 &times; 9 = 90</li>
-              <li>10 &times; 10 = 100</li>
+              <li>10 × 1 = 10</li>
+              <li>10 × 2 = 20</li>
+              <li>10 × 3 = 30</li>
+              <li>10 × 4 = 40</li>
+              <li>10 × 5 = 50</li>
+              <li>10 × 6 = 60</li>
+              <li>10 × 7 = 70</li>
+              <li>10 × 8 = 80</li>
+              <li>10 × 9 = 90</li>
+              <li>10 × 10 = 100</li>
             </ul>
           </article>
         </div>
       </section>
-    </div>
+    </main>
 
-    <footer class="home__footer">
-      &copy; Magic Wheel &mdash; Prends du plaisir &agrave; calculer tous les jours &ndash; une &eacute;toile de plus &agrave; chaque partie !
+    <footer class="quest-footer">
+      © Magic Wheel — Une aventure de tables en moins de 10 minutes.
     </footer>
+
+    <script>
+      (function () {
+        const characters = buildCharacters();
+        const levels = buildLevels();
+        const levelMap = levels.reduce(function (map, level) {
+          map[level.id] = level;
+          return map;
+        }, {});
+
+        const characterContainer = document.getElementById("character-options");
+        const levelContainer = document.getElementById("level-options");
+        const startButton = document.getElementById("start-quest");
+        const setupNote = document.getElementById("setup-note");
+        const storySection = document.getElementById("quest-story");
+        const storyTitle = document.getElementById("quest-story-title");
+        const storyIntro = document.getElementById("quest-story-intro");
+        const storyDuration = document.getElementById("quest-duration");
+        const chapterList = document.getElementById("quest-chapters");
+        const storyConclusion = document.getElementById("quest-conclusion");
+
+        const characterButtons = [];
+        const levelButtons = [];
+
+        let selectedHero = null;
+        let selectedLevelId = null;
+        let questVisible = false;
+
+        renderCharacters();
+        renderLevels();
+        updateStartState();
+
+        if (startButton) {
+          startButton.addEventListener("click", function () {
+            if (!selectedHero || !selectedLevelId) {
+              return;
+            }
+            renderQuest();
+          });
+        }
+
+        function renderCharacters() {
+          if (!characterContainer) {
+            return;
+          }
+          characterButtons.length = 0;
+          characterContainer.innerHTML = "";
+
+          characters.forEach(function (hero) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "character-card";
+            button.dataset.character = hero.id;
+            button.dataset.selected = "false";
+            button.setAttribute("aria-pressed", "false");
+            button.innerHTML = `
+              <span class="character-card__portrait">
+                <img src="${hero.image}" alt="${hero.alt}" loading="lazy" />
+              </span>
+              <span class="character-card__name">${hero.name}</span>
+              <span class="character-card__role">${hero.role}</span>
+              <span class="character-card__text">${hero.description}</span>
+            `;
+
+            button.addEventListener("click", function () {
+              const isSelected = selectedHero && selectedHero.id === hero.id;
+              selectHero(isSelected ? null : hero);
+            });
+
+            button.addEventListener("keydown", function (event) {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                const isSelected = selectedHero && selectedHero.id === hero.id;
+                selectHero(isSelected ? null : hero);
+              }
+            });
+
+            characterButtons.push(button);
+            characterContainer.append(button);
+          });
+        }
+
+        function renderLevels() {
+          if (!levelContainer) {
+            return;
+          }
+          levelButtons.length = 0;
+          levelContainer.innerHTML = "";
+
+          levels.forEach(function (level) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "level-card";
+            button.dataset.level = level.id;
+            button.dataset.selected = "false";
+            button.setAttribute("aria-pressed", "false");
+            button.innerHTML = `
+              <span class="level-card__badge">${level.label}</span>
+              <span class="level-card__title">${level.shortName}</span>
+              <span class="level-card__range">${level.range}</span>
+              <span class="level-card__text">${level.summary}</span>
+            `;
+
+            button.addEventListener("click", function () {
+              const isSelected = selectedLevelId === level.id;
+              selectLevel(isSelected ? null : level.id);
+            });
+
+            button.addEventListener("keydown", function (event) {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                const isSelected = selectedLevelId === level.id;
+                selectLevel(isSelected ? null : level.id);
+              }
+            });
+
+            levelButtons.push(button);
+            levelContainer.append(button);
+          });
+        }
+
+        function selectHero(hero) {
+          selectedHero = hero;
+          characterButtons.forEach(function (button) {
+            const isActive = hero && button.dataset.character === hero.id;
+            button.dataset.selected = isActive ? "true" : "false";
+            button.classList.toggle("character-card--selected", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+          if (questVisible) {
+            hideQuest();
+          }
+          updateStartState();
+        }
+
+        function selectLevel(levelId) {
+          selectedLevelId = levelId;
+          levelButtons.forEach(function (button) {
+            const isActive = levelId && button.dataset.level === levelId;
+            button.dataset.selected = isActive ? "true" : "false";
+            button.classList.toggle("level-card--selected", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+          if (questVisible) {
+            hideQuest();
+          }
+          updateStartState();
+        }
+
+        function updateStartState() {
+          const ready = Boolean(selectedHero && selectedLevelId);
+          if (startButton) {
+            startButton.disabled = !ready;
+          }
+          updateSetupNote();
+        }
+
+        function updateSetupNote() {
+          if (!setupNote) {
+            return;
+          }
+          const level = selectedLevelId ? levelMap[selectedLevelId] : null;
+          let message = "Choisis un héros et un niveau pour préparer la mission.";
+
+          if (selectedHero && level) {
+            const total = estimateTotal(level);
+            message = `${selectedHero.name} se prépare pour la quête « ${level.shortName} » (≈ ${total} min).`;
+          } else if (selectedHero) {
+            message = `${selectedHero.name} attend ton choix de niveau.`;
+          } else if (level) {
+            message = `Choisis un héros pour guider la mission « ${level.shortName} ».`;
+          }
+
+          setupNote.textContent = message;
+        }
+
+        function renderQuest() {
+          const level = selectedLevelId ? levelMap[selectedLevelId] : null;
+          if (!level || !selectedHero) {
+            return;
+          }
+
+          if (storyTitle) {
+            storyTitle.textContent = `${level.label} — ${level.shortName}`;
+          }
+
+          if (storyIntro) {
+            storyIntro.textContent = formatStory(level.intro);
+          }
+
+          if (storyDuration) {
+            const total = estimateTotal(level);
+            storyDuration.textContent = total ? `Durée totale estimée : ≈ ${total} min` : "";
+            storyDuration.hidden = !total;
+          }
+
+          if (chapterList) {
+            chapterList.innerHTML = "";
+            level.steps.forEach(function (step, index) {
+              chapterList.append(createChapter(step, index));
+            });
+          }
+
+          if (storyConclusion) {
+            storyConclusion.textContent = formatStory(level.conclusion);
+          }
+
+          if (storySection) {
+            storySection.hidden = false;
+            storySection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+
+          questVisible = true;
+          if (startButton) {
+            startButton.textContent = "Relancer la quête";
+          }
+        }
+
+        function hideQuest() {
+          if (!questVisible) {
+            return;
+          }
+          if (storySection) {
+            storySection.hidden = true;
+          }
+          questVisible = false;
+          if (startButton) {
+            startButton.textContent = "Lancer la quête";
+          }
+        }
+
+        function createChapter(step, index) {
+          const item = document.createElement("li");
+          item.className = "chapter";
+          item.dataset.completed = "false";
+
+          const header = document.createElement("div");
+          header.className = "chapter__header";
+
+          const tag = document.createElement("span");
+          tag.className = "chapter__tag";
+          tag.textContent = `Chapitre ${index + 1}`;
+          header.append(tag);
+
+          if (typeof step.duration === "number" && step.duration > 0) {
+            const duration = document.createElement("span");
+            duration.className = "chapter__duration";
+            duration.textContent = `≈ ${step.duration} min`;
+            header.append(duration);
+          }
+
+          item.append(header);
+
+          if (step.title) {
+            const title = document.createElement("h3");
+            title.className = "chapter__title";
+            title.textContent = step.title;
+            item.append(title);
+          }
+
+          if (step.narrative) {
+            const narrative = document.createElement("p");
+            narrative.className = "chapter__narrative";
+            narrative.textContent = formatStory(step.narrative);
+            item.append(narrative);
+          }
+
+          if (step.game) {
+            const game = document.createElement("p");
+            game.className = "chapter__game";
+            game.innerHTML = `<strong>Jeu :</strong> ${step.game}`;
+            item.append(game);
+          }
+
+          if (step.tableSummary) {
+            const tables = document.createElement("p");
+            tables.className = "chapter__meta";
+            tables.textContent = step.tableSummary;
+            item.append(tables);
+          }
+
+          if (step.tip) {
+            const tip = document.createElement("p");
+            tip.className = "chapter__tip";
+            tip.textContent = step.tip;
+            item.append(tip);
+          }
+
+          const actions = document.createElement("div");
+          actions.className = "chapter__actions";
+
+          if (step.actionUrl) {
+            const link = document.createElement("a");
+            link.className = "chapter__link";
+            link.href = step.actionUrl;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent = step.actionLabel || "Lancer le mini-jeu";
+            actions.append(link);
+          }
+
+          const mark = document.createElement("button");
+          mark.type = "button";
+          mark.className = "chapter__mark";
+          mark.textContent = "Marquer comme terminé";
+          mark.setAttribute("aria-pressed", "false");
+          mark.addEventListener("click", function () {
+            const completed = item.dataset.completed === "true";
+            const nextState = !completed;
+            item.dataset.completed = nextState ? "true" : "false";
+            mark.textContent = nextState ? "Chapitre terminé ✔" : "Marquer comme terminé";
+            mark.setAttribute("aria-pressed", nextState ? "true" : "false");
+          });
+          actions.append(mark);
+
+          item.append(actions);
+          return item;
+        }
+
+        function estimateTotal(level) {
+          if (!level || !Array.isArray(level.steps)) {
+            return 0;
+          }
+          return level.steps.reduce(function (sum, step) {
+            return sum + (typeof step.duration === "number" ? step.duration : 0);
+          }, 0);
+        }
+
+        function formatStory(template) {
+          if (!template) {
+            return "";
+          }
+          if (!selectedHero) {
+            return template;
+          }
+          return template.replace(/\{hero\}/g, selectedHero.name);
+        }
+
+        function buildCharacters() {
+          return [
+            {
+              id: "chevalier",
+              name: "Chevalier Ardent",
+              role: "Bouclier étincelant",
+              description: "Courageux et loyal, il défend chaque village avec son épée lumineuse.",
+              image: "assets/chevalier.png",
+              alt: "Chevalier Ardent brandissant son épée"
+            },
+            {
+              id: "magicienne",
+              name: "Magicienne Solaire",
+              role: "Sorts de lumière",
+              description: "Ses runes brillent autant que ses idées pour résoudre les énigmes.",
+              image: "assets/magicienne.png",
+              alt: "Magicienne Solaire invoquant un sort"
+            },
+            {
+              id: "exploratrice",
+              name: "Exploratrice Stella",
+              role: "Stratégies malignes",
+              description: "Elle cartographie chaque recoin et trouve le chemin le plus malin.",
+              image: "assets/princesse.png",
+              alt: "Exploratrice Stella observant une carte étoilée"
+            }
+          ];
+        }
+
+        function buildLevels() {
+          return [
+            {
+              id: "1",
+              label: "Niveau 1",
+              shortName: "Forêt des Apprentis",
+              range: "Tables 1 à 3, avec un soupçon de 4",
+              summary: "Idéal pour consolider les bases en douceur.",
+              intro: "Les feux follets ont volé le cristal du village. {hero} doit le récupérer avant que la nuit ne tombe.",
+              conclusion: "Grâce à sa ténacité, {hero} ramène le cristal et la forêt s'illumine de nouveau.",
+              steps: [
+                {
+                  id: "grimoire",
+                  title: "Veillée au camp",
+                  narrative: "{hero} rassemble les fragments du grimoire pour retrouver la trace des lucioles voleuses.",
+                  duration: 3,
+                  game: "Memory multi",
+                  actionLabel: "Ouvrir Memory multi",
+                  actionUrl: buildMemoryUrl(2),
+                  tableSummary: "Table ciblée : 2 (rappels des tables 1 et 3).",
+                  tip: "Assemble les 6 paires pour reconstituer la carte lumineuse."
+                },
+                {
+                  id: "clairiere",
+                  title: "Course dans la clairière",
+                  narrative: "En suivant les lucioles, {hero} récite les sorts des tables 1 à 3 pour ouvrir les portails.",
+                  duration: 3,
+                  game: "Roulette magique",
+                  actionLabel: "Lancer Roulette magique",
+                  actionUrl: buildRouletteUrl([1, 2, 3]),
+                  tableSummary: "Tables 1 à 3, avec quelques défis de la table 4.",
+                  tip: "15 secondes par question, ne laisse pas la clairière s'assombrir !"
+                },
+                {
+                  id: "pont",
+                  title: "L'esprit du pont",
+                  narrative: "Le gardien de pierre teste {hero} avec des affirmations de multiplication.",
+                  duration: 3,
+                  game: "Duel Vrai ou Faux",
+                  actionLabel: "Défier l'esprit",
+                  actionUrl: buildTrueFalseUrl([1, 2, 3, 4], "apprenti"),
+                  tableSummary: "Tables 1 à 3 et quelques touches de la table 4.",
+                  tip: "Tu disposes de 12 secondes pour valider chaque sort."
+                }
+              ]
+            },
+            {
+              id: "2",
+              label: "Niveau 2",
+              shortName: "Montagnes Obsidiennes",
+              range: "Tables 4 à 6, avec une pointe de 7",
+              summary: "Parfait pour gagner en rythme avant les grands défis.",
+              intro: "Les trolls de pierre ont bloqué les mines obsidiennes. {hero} doit rouvrir le passage avant la prochaine lune.",
+              conclusion: "{hero} libère les cristaux et les mineurs peuvent à nouveau voyager.",
+              steps: [
+                {
+                  id: "sentinelles",
+                  title: "Sentinelles de pierre",
+                  narrative: "{hero} récupère les runes auprès des statues pour ouvrir la montagne.",
+                  duration: 3,
+                  game: "Memory multi",
+                  actionLabel: "Ouvrir Memory multi",
+                  actionUrl: buildMemoryUrl(5),
+                  tableSummary: "Table ciblée : 5 (rappels des tables 4 à 6).",
+                  tip: "Retrouve vite les 6 paires gardées par les trolls."
+                },
+                {
+                  id: "ascension",
+                  title: "Ascension des Montagnes Obsidiennes",
+                  narrative: "Chaque cavité s'ouvre en récitant les tables 4 à 6 avec précision.",
+                  duration: 3,
+                  game: "Roulette magique",
+                  actionLabel: "Lancer Roulette magique",
+                  actionUrl: buildRouletteUrl([4, 5, 6]),
+                  tableSummary: "Tables 4 à 6 avec quelques incursions de la table 7.",
+                  tip: "15 secondes par question : maintiens le rythme d'un chevalier."
+                },
+                {
+                  id: "coeur",
+                  title: "Le cœur de la montagne",
+                  narrative: "Le golem final vérifie les calculs avant de relâcher la gemme.",
+                  duration: 3,
+                  game: "Duel Vrai ou Faux",
+                  actionLabel: "Affronter le golem",
+                  actionUrl: buildTrueFalseUrl([4, 5, 6, 7], "chevalier"),
+                  tableSummary: "Tables 4 à 6 et quelques questions de la table 7.",
+                  tip: "8 secondes par question, reste concentré jusqu'au bout."
+                }
+              ]
+            },
+            {
+              id: "3",
+              label: "Niveau 3",
+              shortName: "Désert des Chimères",
+              range: "Tables 7 à 9 uniquement",
+              summary: "Une mission intense pour maîtriser les tables élevées.",
+              intro: "Le désert des Chimères menace d'engloutir l'oasis sacrée. {hero} doit sceller la faille avant le coucher du soleil.",
+              conclusion: "Le dragon apaise la tempête et {hero} gagne une relique ancestrale.",
+              steps: [
+                {
+                  id: "ruines",
+                  title: "Ruines des chimères",
+                  narrative: "{hero} récupère les glyphes oubliés du désert brûlant.",
+                  duration: 3,
+                  game: "Memory multi",
+                  actionLabel: "Ouvrir Memory multi",
+                  actionUrl: buildMemoryUrl(8),
+                  tableSummary: "Table ciblée : 8 (rappels des tables 7 à 9).",
+                  tip: "Assemble les paires avant que la tempête de sable n'arrive."
+                },
+                {
+                  id: "mirages",
+                  title: "Course à travers les mirages",
+                  narrative: "Les chimères invoquent des mirages multipliés, {hero} doit répondre vite.",
+                  duration: 3,
+                  game: "Roulette magique",
+                  actionLabel: "Lancer Roulette magique",
+                  actionUrl: buildRouletteUrl([7, 8, 9]),
+                  tableSummary: "Tables 7 à 9 uniquement.",
+                  tip: "15 secondes par question, garde ton sang-froid."
+                },
+                {
+                  id: "temple",
+                  title: "Temple du dragon sableux",
+                  narrative: "Le dragon du désert lance des affirmations brûlantes.",
+                  duration: 3,
+                  game: "Duel Vrai ou Faux",
+                  actionLabel: "Affronter le dragon",
+                  actionUrl: buildTrueFalseUrl([7, 8, 9], "dragon"),
+                  tableSummary: "Tables 7 à 9 uniquement.",
+                  tip: "5 secondes par question : réponds sans hésiter !"
+                }
+              ]
+            }
+          ];
+        }
+
+        function buildMemoryUrl(table) {
+          const value = Number(table);
+          if (!Number.isInteger(value) || value < 1 || value > 10) {
+            return "memory.html";
+          }
+          return `memory.html?table=${value}`;
+        }
+
+        function buildRouletteUrl(tables) {
+          const values = sanitizeTables(tables);
+          if (!values.length) {
+            return "jeu.html";
+          }
+          return `jeu.html?mode=classic&tables=${values.join(",")}`;
+        }
+
+        function buildTrueFalseUrl(tables, difficulty) {
+          const values = sanitizeTables(tables);
+          let url = "vf.html";
+          if (values.length) {
+            url += `?tables=${values.join(",")}`;
+          }
+          if (difficulty) {
+            url += values.length ? `&difficulty=${encodeURIComponent(difficulty)}` : `?difficulty=${encodeURIComponent(difficulty)}`;
+          }
+          return url;
+        }
+
+        function sanitizeTables(list) {
+          if (!Array.isArray(list)) {
+            return [];
+          }
+          const seen = {};
+          const result = [];
+          list.forEach(function (value) {
+            const number = Number(value);
+            if (Number.isInteger(number) && number >= 1 && number <= 10 && !seen[number]) {
+              seen[number] = true;
+              result.push(number);
+            }
+          });
+          result.sort(function (a, b) {
+            return a - b;
+          });
+          return result;
+        }
+      })();
+    </script>
   </body>
 </html>
-
-
-
-
-
-
-
-

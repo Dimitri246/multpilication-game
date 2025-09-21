@@ -265,7 +265,8 @@
             <div class="chip-group" id="difficulty-options"></div>
           </div>
         </div>
-        <p class="setup__notice" id="difficulty-note">Mode Chevalier : 10 secondes par question.</p>
+        <p class="setup__notice" id="difficulty-note">Mode Chevalier : 8 secondes par duel.</p>
+        <p class="setup__notice" id="table-note">Tables explorées : 1 à 10.</p>
         <div class="actions actions--header">
           <button class="btn btn--true" id="start-btn" type="button">Lancer le duel</button>
           <a class="home-link" href="index.html">&larr; Retour au camp</a>
@@ -332,12 +333,38 @@
 
     <script>
       const TOTAL_QUESTIONS = 10;
-      const DEFAULT_QUESTION_TIME = 10;
-      const MULTIPLICANDS = Array.from({ length: 10 }, function (_, index) {
+      const DEFAULT_MULTIPLICANDS = Array.from({ length: 10 }, function (_, index) {
         return index + 1;
       });
-      const MULTIPLIERS = MULTIPLICANDS.slice();
+      const DEFAULT_MULTIPLIERS = DEFAULT_MULTIPLICANDS.slice();
       const OFFSETS = [1, -1, 10, -10];
+
+      const DIFFICULTY_OPTIONS = [
+        {
+          id: "apprenti",
+          name: "Apprenti",
+          label: "Apprenti – 12 s",
+          time: 12,
+          description: "Respire, tu as 12 secondes par duel."
+        },
+        {
+          id: "chevalier",
+          name: "Chevalier",
+          label: "Chevalier – 8 s",
+          time: 8,
+          description: "Un rythme héroïque : 8 secondes pour répondre."
+        },
+        {
+          id: "dragon",
+          name: "Dragon",
+          label: "Dragon – 5 s",
+          time: 5,
+          description: "Défi des maîtres : 5 secondes brûlantes."
+        }
+      ];
+
+      let allowedMultiplicands = DEFAULT_MULTIPLICANDS.slice();
+      let allowedMultipliers = DEFAULT_MULTIPLIERS.slice();
 
       const promptElement = document.getElementById("prompt");
       const propositionElement = document.getElementById("proposition");
@@ -357,6 +384,7 @@
       const restartButton = document.getElementById("restart-btn");
       const difficultyOptionsElement = document.getElementById("difficulty-options");
       const difficultyNoteElement = document.getElementById("difficulty-note");
+      const tableNoteElement = document.getElementById("table-note");
 
       let questions = [];
       let currentIndex = 0;
@@ -381,9 +409,12 @@
 
       function buildQuestions() {
         const list = [];
+        const multiplicands = allowedMultiplicands.length ? allowedMultiplicands : DEFAULT_MULTIPLICANDS;
+        const multipliers = allowedMultipliers.length ? allowedMultipliers : DEFAULT_MULTIPLIERS;
+
         while (list.length < TOTAL_QUESTIONS) {
-          const a = MULTIPLICANDS[Math.floor(Math.random() * MULTIPLICANDS.length)];
-          const b = MULTIPLIERS[Math.floor(Math.random() * MULTIPLIERS.length)];
+          const a = multiplicands[Math.floor(Math.random() * multiplicands.length)];
+          const b = multipliers[Math.floor(Math.random() * multipliers.length)];
           const correct = a * b;
           const isCorrect = Math.random() < 0.5;
           let shown = correct;
@@ -535,12 +566,81 @@
         });
         if (difficultyNoteElement) {
           const active = duelSettings.difficulty;
-          difficultyNoteElement.textContent = active ? "Mode " + active.label.replace(/\s&ndash;.*/, "") + " : " + active.description : "Choisis ta difficult&eacute;";
+          difficultyNoteElement.textContent = active ? "Mode " + (active.name || active.label) + " : " + active.description : "Choisis ta difficulté";
         }
       }
 
 
-      function startGame() {
+      function parseTablesParam(input) {
+        if (!input) {
+          return [];
+        }
+        const seen = {};
+        const result = [];
+        String(input)
+          .split(/[^0-9]+/)
+          .forEach(function (token) {
+            if (!token) {
+              return;
+            }
+            const value = Number(token);
+            if (Number.isInteger(value) && value >= 1 && value <= 10 && !seen[value]) {
+              seen[value] = true;
+              result.push(value);
+            }
+          });
+        result.sort(function (a, b) {
+          return a - b;
+        });
+        return result;
+      }
+
+      function applyQuerySettings() {
+        const params = new URLSearchParams(window.location.search);
+        const tablesParam = params.get("tables");
+        const difficultyParam = params.get("difficulty");
+
+        const parsedTables = parseTablesParam(tablesParam);
+        if (parsedTables.length > 0) {
+          allowedMultiplicands = parsedTables;
+        } else {
+          allowedMultiplicands = DEFAULT_MULTIPLICANDS.slice();
+        }
+        allowedMultipliers = DEFAULT_MULTIPLIERS.slice();
+
+        if (difficultyParam) {
+          const found = DIFFICULTY_OPTIONS.find(function (option) {
+            return option.id === difficultyParam;
+          });
+          if (found) {
+            duelSettings = {
+              difficulty: found,
+              questionTime: found.time
+            };
+          }
+        }
+      }
+
+      function formatTablesLabel(list) {
+        if (!list || list.length === 0) {
+          return "1 à 10";
+        }
+        if (list.length === 1) {
+          return String(list[0]);
+        }
+        return list.join(", ");
+      }
+
+      function updateTableNote() {
+        if (!tableNoteElement) {
+          return;
+        }
+        const label = formatTablesLabel(allowedMultiplicands);
+        tableNoteElement.textContent = `Tables explorées : ${label}.`;
+      }
+
+      function prepareGame() {
+        stopQuestionTimer();
         questions = buildQuestions();
         currentIndex = 0;
         score = 0;
@@ -551,6 +651,12 @@
         showQuestion();
       }
 
+      if (startButton) {
+        startButton.addEventListener("click", function () {
+          prepareGame();
+        });
+      }
+
       btnTrue.addEventListener("click", function () {
         registerAnswer(true);
       });
@@ -558,10 +664,13 @@
         registerAnswer(false);
       });
       restartButton.addEventListener("click", function () {
-        startGame();
+        prepareGame();
       });
 
-      startGame();
+      applyQuerySettings();
+      renderDifficultyOptions();
+      updateTableNote();
+      prepareGame();
     </script>
   </body>
 </html>
