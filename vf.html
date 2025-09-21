@@ -1,0 +1,586 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vrai ou Faux - Magic Wheel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet" />
+        <style>
+      :root {
+        --bg-game: linear-gradient(140deg, #f5f3ff 0%, #f0f9ff 50%, #fff5fb 100%);
+        --surface: #ffffff;
+        --primary: #6c5ce7;
+        --primary-dark: #4f3ac8;
+        --accent: #ff7f50;
+        --success: #00b894;
+        --text: #2f1c6a;
+        --muted: #5e5a80;
+        --shadow: 0 30px 70px -48px rgba(76, 55, 140, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg-game);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app {
+        width: min(960px, 94%);
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) 0 3rem;
+        display: grid;
+        gap: clamp(1.8rem, 4vw, 2.4rem);
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 26px;
+        padding: clamp(1.6rem, 3vw, 2.4rem);
+        box-shadow: var(--shadow);
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+        text-align: center;
+        color: var(--primary);
+      }
+
+      .subtitle {
+        margin: 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+
+      .hud__item {
+        background: rgba(108, 92, 231, 0.1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        text-align: center;
+      }
+
+      .hud__label {
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .hud__value {
+        margin-top: 0.35rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .question-card {
+        display: grid;
+        gap: 1.4rem;
+        text-align: center;
+      }
+
+      .question-card__prompt {
+        font-size: clamp(2.4rem, 6vw, 3.4rem);
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .question-card__proposition {
+        font-size: clamp(1.4rem, 4vw, 2.1rem);
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .timer-bar {
+        position: relative;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(108, 92, 231, 0.12);
+        overflow: hidden;
+      }
+
+      .timer-bar__fill {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, var(--primary), #8e7bff);
+        transform-origin: left center;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 18px;
+        padding: 0.85rem 1.9rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--primary);
+        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.6);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .btn--true {
+        background: var(--success);
+        box-shadow: 0 20px 55px -36px rgba(0, 184, 148, 0.6);
+      }
+
+      .btn--false {
+        background: var(--accent);
+        box-shadow: 0 20px 55px -36px rgba(255, 118, 117, 0.6);
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+      }
+
+      .feedback {
+        min-height: 1.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .feedback--success {
+        color: var(--success);
+      }
+
+      .summary {
+        display: grid;
+        gap: 1.2rem;
+        text-align: center;
+      }
+
+          <p class="summary__score" id="summary-score">⚔️ 0 / 10</p>
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .summary__details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 1rem;
+      }
+
+      .summary__card {
+        background: rgba(108, 92, 231, 0.08);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+      }
+
+      .summary__card .hud__label {
+        color: var(--muted);
+      }
+
+      .summary__card .hud__value {
+        color: var(--primary-dark);
+      }
+
+      .home-link {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .setup__controls {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .setup__group {
+        display: grid;
+        gap: 0.65rem;
+      }
+
+      .setup__label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .chip-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .chip {
+        border: none;
+        border-radius: 999px;
+        padding: 0.55rem 1.35rem;
+        background: rgba(108, 92, 231, 0.12);
+        color: var(--primary-dark);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+      }
+
+      .chip[data-selected="true"] {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 16px 40px -28px rgba(108, 92, 231, 0.65);
+      }
+
+      .chip:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+            <section class="panel">
+        <h1>Vrai ou Faux</h1>
+        <p class="subtitle">D&eacute;fie les oracles du royaume : juge chaque formule avant la fin du sablier.</p>
+        <div class="setup__controls">
+          <div class="setup__group">
+            <span class="setup__label">Choisis ta difficult&eacute;</span>
+            <div class="chip-group" id="difficulty-options"></div>
+          </div>
+        </div>
+        <p class="setup__notice" id="difficulty-note">Mode Chevalier : 10 secondes par question.</p>
+        <div class="actions actions--header">
+          <button class="btn btn--true" id="start-btn" type="button">Lancer le duel</button>
+          <a class="home-link" href="index.html">&larr; Retour au camp</a>
+        </div>
+      </section>
+
+      <section class="panel" id="hud-panel">
+        <div class="hud">
+          <div class="hud__item">
+            <span class="hud__label">📜 Duels</span>
+            <span class="hud__value" id="question-count">📜 0 / 10</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⚔️ Victoires</span>
+            <span class="hud__value" id="score">⚔️ 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⏱️ Sablier</span>
+            <span class="hud__value" id="time-left">⏱️ 3 s</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="game-panel">
+        <div class="question-card">
+          <div class="question-card__prompt" id="prompt">-- x --</div>
+          <div class="question-card__proposition" id="proposition">= -- ?</div>
+          <div class="timer-bar" aria-hidden="true">
+            <div class="timer-bar__fill" id="timer-bar"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn--true" id="btn-true" type="button">✅ Vrai</button>
+            <button class="btn btn--false" id="btn-false" type="button">❌ Faux</button>
+          </div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+        </div>
+      </section>
+
+            <section class="panel" id="summary-panel" hidden>
+        <div class="summary">
+          <p class="summary__score" id="summary-score">⚔️ 0 / 10</p>
+          <div class="summary__details">
+            <div class="summary__card">
+              <span class="hud__label">📜 Duels tent&eacute;s</span>
+              <span class="hud__value" id="summary-questions">📜 0</span>
+            </div>
+            <div class="summary__card">
+              <span class="hud__label">⚔️ Victoires</span>
+              <span class="hud__value" id="summary-correct">⚔️ 0</span>
+            </div>
+            <div class="summary__card">
+              <span class="hud__label">🛡️ Ripostes adverses</span>
+              <span class="hud__value" id="summary-wrong">🛡️ 0</span>
+            </div>
+          </div>
+          <p class="summary__xp" id="summary-xp">✨ +0 xp</p>
+          <div class="actions">
+            <button class="btn btn--true" id="restart-btn" type="button">Relever le d&eacute;fi</button>
+            <a class="home-link" href="index.html">&larr; Retour au camp</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const TOTAL_QUESTIONS = 10;
+      const DEFAULT_QUESTION_TIME = 10;
+      const MULTIPLICANDS = Array.from({ length: 10 }, function (_, index) {
+        return index + 1;
+      });
+      const MULTIPLIERS = MULTIPLICANDS.slice();
+      const OFFSETS = [1, -1, 10, -10];
+
+      const promptElement = document.getElementById("prompt");
+      const propositionElement = document.getElementById("proposition");
+      const questionCountElement = document.getElementById("question-count");
+      const scoreElement = document.getElementById("score");
+      const timeLeftElement = document.getElementById("time-left");
+      const timerBarElement = document.getElementById("timer-bar");
+      const feedbackElement = document.getElementById("feedback");
+      const btnTrue = document.getElementById("btn-true");
+      const btnFalse = document.getElementById("btn-false");
+      const summaryPanel = document.getElementById("summary-panel");
+      const gamePanel = document.getElementById("game-panel");
+      const summaryScoreElement = document.getElementById("summary-score");
+      const summaryCorrectElement = document.getElementById("summary-correct");
+      const summaryWrongElement = document.getElementById("summary-wrong");
+      const startButton = document.getElementById("start-btn");
+      const restartButton = document.getElementById("restart-btn");
+      const difficultyOptionsElement = document.getElementById("difficulty-options");
+      const difficultyNoteElement = document.getElementById("difficulty-note");
+
+      let questions = [];
+      let currentIndex = 0;
+      let score = 0;
+      let timerId = null;
+      let questionDeadline = null;
+      let awaitingNext = false;
+      let duelSettings = {
+        difficulty: DIFFICULTY_OPTIONS[1],
+        questionTime: DIFFICULTY_OPTIONS[1].time
+      };
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+
+      function buildQuestions() {
+        const list = [];
+        while (list.length < TOTAL_QUESTIONS) {
+          const a = MULTIPLICANDS[Math.floor(Math.random() * MULTIPLICANDS.length)];
+          const b = MULTIPLIERS[Math.floor(Math.random() * MULTIPLIERS.length)];
+          const correct = a * b;
+          const isCorrect = Math.random() < 0.5;
+          let shown = correct;
+
+          if (!isCorrect) {
+            let offset = OFFSETS[Math.floor(Math.random() * OFFSETS.length)];
+            shown = correct + offset;
+            if (shown <= 0 || shown === correct) {
+              offset = offset > 0 ? 1 : -1;
+              shown = correct + offset;
+              if (shown <= 0) {
+                shown = correct + 10;
+              }
+            }
+          }
+
+          list.push({ a: a, b: b, result: correct, shown: shown, isCorrect: isCorrect });
+        }
+        return list;
+      }
+
+      function updateHud() {
+        questionCountElement.textContent = "🎯 " + (currentIndex + 1) + " / " + TOTAL_QUESTIONS;
+        scoreElement.textContent = "✅ " + score;
+      }
+
+      function clearFeedback() {
+        feedbackElement.textContent = "";
+        feedbackElement.classList.remove("feedback--success");
+      }
+
+      function showFeedback(message, success) {
+        feedbackElement.textContent = message;
+        feedbackElement.classList.toggle("feedback--success", success);
+      }
+
+      function updateTimerDisplay() {
+        if (!questionDeadline) {
+          timeLeftElement.textContent = "⏱️ 0 s";
+          timerBarElement.style.transform = "scaleX(0)";
+          return;
+        }
+        const remaining = Math.max(0, questionDeadline - Date.now());
+        const ratio = remaining / (duelSettings.questionTime * 1000);
+        timerBarElement.style.transform = "scaleX(" + ratio + ")";
+        timeLeftElement.textContent = "⏱️ " + Math.ceil(remaining / 1000) + " s";
+      }
+
+      function stopQuestionTimer() {
+        if (timerId) {
+          window.clearInterval(timerId);
+          timerId = null;
+        }
+        questionDeadline = null;
+      }
+
+      function startQuestionTimer() {
+        stopQuestionTimer();
+        questionDeadline = Date.now() + duelSettings.questionTime * 1000;
+        updateTimerDisplay();
+        timerId = window.setInterval(function () {
+          if (!questionDeadline) {
+            return;
+          }
+          if (Date.now() >= questionDeadline) {
+            stopQuestionTimer();
+            registerAnswer(null);
+            return;
+          }
+          updateTimerDisplay();
+        }, 100);
+      }
+
+      function setButtonsDisabled(disabled) {
+        btnTrue.disabled = disabled;
+        btnFalse.disabled = disabled;
+      }
+
+      function showQuestion() {
+        clearFeedback();
+        const question = questions[currentIndex];
+        promptElement.textContent = question.a + " x " + question.b;
+        propositionElement.textContent = "= " + question.shown + " ?";
+        updateHud();
+        setButtonsDisabled(false);
+        awaitingNext = false;
+        startQuestionTimer();
+      }
+
+      function registerAnswer(answerIsCorrect) {
+        if (awaitingNext) {
+          return;
+        }
+        awaitingNext = true;
+        stopQuestionTimer();
+
+        const question = questions[currentIndex];
+        const isCorrect = answerIsCorrect === question.isCorrect;
+        if (answerIsCorrect === null) {
+          showFeedback("Le sablier est vide !", false);
+        } else if (isCorrect) {
+          score += 1;
+          showFeedback("Le sort touche sa cible !", true);
+        } else {
+          showFeedback("L'oracle te renvoie le sort...", false);
+        }
+
+        setButtonsDisabled(true);
+
+        window.setTimeout(function () {
+          currentIndex += 1;
+          if (currentIndex >= TOTAL_QUESTIONS) {
+            showSummary();
+          } else {
+            showQuestion();
+          }
+        }, 600);
+      }
+
+      function showSummary() {
+        gamePanel.hidden = true;
+        summaryPanel.hidden = false;
+        summaryScoreElement.textContent = "✅ " + score + " / " + TOTAL_QUESTIONS;
+        summaryCorrectElement.textContent = "✅ " + score;
+        summaryWrongElement.textContent = "♻️ " + (TOTAL_QUESTIONS - score);
+      }
+      function renderDifficultyOptions() {
+        if (!difficultyOptionsElement) {
+          return;
+        }
+        difficultyOptionsElement.innerHTML = "";
+        DIFFICULTY_OPTIONS.forEach(function (option) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "chip";
+          const isSelected = duelSettings.difficulty.id === option.id;
+          button.dataset.selected = isSelected ? "true" : "false";
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+          button.textContent = option.label;
+          button.addEventListener("click", function () {
+            duelSettings = {
+              difficulty: option,
+              questionTime: option.time
+            };
+            renderDifficultyOptions();
+            prepareGame();
+          });
+          difficultyOptionsElement.append(button);
+        });
+        if (difficultyNoteElement) {
+          const active = duelSettings.difficulty;
+          difficultyNoteElement.textContent = active ? "Mode " + active.label.replace(/\s&ndash;.*/, "") + " : " + active.description : "Choisis ta difficult&eacute;";
+        }
+      }
+
+
+      function startGame() {
+        questions = buildQuestions();
+        currentIndex = 0;
+        score = 0;
+        summaryPanel.hidden = true;
+        gamePanel.hidden = false;
+        clearFeedback();
+        updateHud();
+        showQuestion();
+      }
+
+      btnTrue.addEventListener("click", function () {
+        registerAnswer(true);
+      });
+      btnFalse.addEventListener("click", function () {
+        registerAnswer(false);
+      });
+      restartButton.addEventListener("click", function () {
+        startGame();
+      });
+
+      startGame();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

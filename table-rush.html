@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course aux reponses - Magic Wheel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet" />
+        <style>
+      :root {
+        --bg-game: linear-gradient(140deg, #f5f3ff 0%, #f0f9ff 50%, #fff5fb 100%);
+        --surface: #ffffff;
+        --primary: #6c5ce7;
+        --primary-dark: #4f3ac8;
+        --accent: #ff7f50;
+        --success: #00b894;
+        --text: #2f1c6a;
+        --muted: #5e5a80;
+        --shadow: 0 30px 70px -48px rgba(76, 55, 140, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg-game);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app {
+        width: min(960px, 94%);
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) 0 3rem;
+        display: grid;
+        gap: clamp(1.8rem, 4vw, 2.4rem);
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 26px;
+        padding: clamp(1.6rem, 3vw, 2.4rem);
+        box-shadow: var(--shadow);
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+        text-align: center;
+        color: var(--primary);
+      }
+
+      .subtitle {
+        margin: 0;
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      .select {
+        padding: 0.75rem 1.25rem;
+        border-radius: 16px;
+        border: 2px solid rgba(108, 92, 231, 0.25);
+        font-size: 1rem;
+        font-family: inherit;
+        background: #fff;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 18px;
+        padding: 0.85rem 1.9rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--primary);
+        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.6);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+
+      .hud__item {
+        background: rgba(108, 92, 231, 0.1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        text-align: center;
+      }
+
+      .hud__label {
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .hud__value {
+        margin-top: 0.35rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .question-card {
+        display: grid;
+        gap: 1.25rem;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .question-card__operation {
+        font-size: clamp(2.4rem, 6vw, 3.4rem);
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .question-card__detail {
+        font-size: 1.05rem;
+        color: var(--muted);
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+      }
+
+      .result-btn {
+        border: none;
+        border-radius: 18px;
+        padding: 0.95rem 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: #fff;
+        color: var(--text);
+        box-shadow: 0 20px 55px -38px rgba(108, 92, 231, 0.55);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+      }
+
+      .result-btn:hover:not([data-state="correct"]) {
+        transform: translateY(-3px);
+      }
+
+      .result-btn[data-state="correct"] {
+        background: rgba(0, 184, 148, 0.18);
+        color: var(--success);
+        cursor: default;
+        box-shadow: none;
+      }
+
+      .result-btn[data-state="error"] {
+        animation: pulse 0.4s ease;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          background: #fff;
+        }
+        50% {
+          background: rgba(255, 118, 117, 0.15);
+        }
+      }
+
+      .status {
+        min-height: 1.5rem;
+        text-align: center;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .status--success {
+        color: var(--success);
+      }
+
+      @media (max-width: 640px) {
+        .results {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <h1>Course aux r&eacute;ponses</h1>
+        <p class="subtitle">Prot&egrave;ge la caravane : choisis une table puis d&eacute;signe le bon butin &agrave; chaque attaque.</p>
+      </section>
+
+      <section class="panel">
+        <div class="controls">
+          <label for="table-select">Table :</label>
+          <select class="select" id="table-select" aria-label="Choix de la table">
+            <option value="1">Table de 1</option>
+            <option value="2">Table de 2</option>
+            <option value="3">Table de 3</option>
+            <option value="4">Table de 4</option>
+            <option value="5">Table de 5</option>
+            <option value="6" selected>Table de 6</option>
+            <option value="7">Table de 7</option>
+            <option value="8">Table de 8</option>
+            <option value="9">Table de 9</option>
+            <option value="10">Table de 10</option>
+          </select>
+          <button class="btn" id="start-btn" type="button">Lancer</button>
+          <a class="home-link" href="index.html">&larr; Retour &agrave; l'accueil</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="hud">
+          <div class="hud__item">
+            <span class="hud__label">🎯 Distance parcourue</span>
+            <span class="hud__value" id="progress">🎯 0 / 10</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⚔️ Ennemis battus</span>
+            <span class="hud__value" id="correct">⚔️ 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">🛡️ Blessures &agrave; soigner</span>
+            <span class="hud__value" id="errors">🛡️ 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⏱️ Sablier</span>
+            <span class="hud__value" id="timer">⏱️ 00:00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="question-card">
+          <div class="question-card__operation" id="operation">-- x --</div>
+          <div class="question-card__detail" id="detail">Clique sur le bon r&eacute;sultat ci-dessous.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="results" id="results"></div>
+      </section>
+
+      <section class="panel">
+        <p class="status" id="status"></p>
+      </section>
+    </main>
+
+    <script>
+      const TOTAL_OPERATIONS = 10;
+      const MULTIPLIERS = Array.from({ length: 10 }, function (_, index) {
+        return index + 1;
+      });
+
+      const tableSelect = document.getElementById("table-select");
+      const startButton = document.getElementById("start-btn");
+      const operationElement = document.getElementById("operation");
+      const detailElement = document.getElementById("detail");
+      const progressElement = document.getElementById("progress");
+      const correctElement = document.getElementById("correct");
+      const errorsElement = document.getElementById("errors");
+      const timerElement = document.getElementById("timer");
+      const resultsElement = document.getElementById("results");
+      const statusElement = document.getElementById("status");
+
+      const gameState = {
+        table: 6,
+        operations: [],
+        index: 0,
+        correct: 0,
+        errors: 0,
+        startTime: null,
+        timerId: null
+      };
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+
+      function buildOperations(table) {
+        const list = MULTIPLIERS.map(function (multiplier) {
+          return {
+            a: table,
+            b: multiplier,
+            product: table * multiplier
+          };
+        });
+        return shuffle(list);
+      }
+
+      function buildResults(table) {
+        const values = MULTIPLIERS.map(function (multiplier) {
+          return table * multiplier;
+        });
+        return shuffle(values);
+      }
+
+      function renderResults(values) {
+        resultsElement.innerHTML = "";
+        values.forEach(function (value) {
+          const button = document.createElement("button");
+          button.className = "result-btn";
+          button.type = "button";
+          button.textContent = value;
+          button.dataset.value = String(value);
+          button.dataset.state = "hidden";
+          resultsElement.append(button);
+        });
+      }
+
+      function clearStatus() {
+        statusElement.textContent = "";
+        statusElement.classList.remove("status--success");
+      }
+
+      function showStatus(message, success) {
+        statusElement.textContent = message;
+        statusElement.classList.toggle("status--success", success);
+      }
+
+      function updateHud() {
+        const current = Math.min(gameState.index + 1, TOTAL_OPERATIONS);
+        progressElement.textContent = "🎯 " + current + " / " + TOTAL_OPERATIONS;
+        correctElement.textContent = "✅ " + gameState.correct;
+        errorsElement.textContent = "♻️ " + gameState.errors;
+      }
+
+      function updateTimer() {
+        if (!gameState.startTime) {
+          timerElement.textContent = "⏱️ 00:00";
+          return;
+        }
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+        const seconds = String(elapsed % 60).padStart(2, "0");
+        timerElement.textContent = "⏱️ " + minutes + ":" + seconds;
+      }
+
+      function startTimer() {
+        stopTimer();
+        gameState.startTime = Date.now();
+        updateTimer();
+        gameState.timerId = window.setInterval(updateTimer, 1000);
+      }
+
+      function stopTimer() {
+        if (gameState.timerId) {
+          window.clearInterval(gameState.timerId);
+          gameState.timerId = null;
+        }
+      }
+
+      function showOperation() {
+        const current = gameState.operations[gameState.index];
+        operationElement.textContent = current.a + " x " + current.b;
+        detailElement.textContent = "Rep&egrave;re le bon butin ci-dessous.";
+        updateHud();
+        clearStatus();
+      }
+
+      function finishGame() {
+        stopTimer();
+        showStatus("Route s&eacute;curis&eacute;e !", true);
+        detailElement.textContent = "Mission accomplie, choisis une nouvelle escale.";
+      }
+
+      function prepareGame() {
+        stopTimer();
+        gameState.table = Number(tableSelect.value);
+        gameState.operations = [];
+        gameState.index = 0;
+        gameState.correct = 0;
+        gameState.errors = 0;
+        gameState.startTime = null;
+        renderResults([]);
+        progressElement.textContent = "🎯 0 / " + TOTAL_OPERATIONS;
+        correctElement.textContent = "✅ 0";
+        errorsElement.textContent = "♻️ 0";
+        timerElement.textContent = "⏱️ 00:00";
+        operationElement.textContent = "-- x --";
+        detailElement.textContent = "Choisis une table puis appuie sur Lancer.";
+        clearStatus();
+      }
+
+      function startGame() {
+        stopTimer();
+        const table = Number(tableSelect.value);
+        gameState.table = table;
+        gameState.operations = buildOperations(table);
+        gameState.index = 0;
+        gameState.correct = 0;
+        gameState.errors = 0;
+        renderResults(buildResults(table));
+        updateHud();
+        showOperation();
+        startTimer();
+      }
+
+      function handleResultClick(event) {
+        const button = event.target;
+        if (!button.classList.contains("result-btn")) {
+          return;
+        }
+        if (button.dataset.state === "correct") {
+          return;
+        }
+        if (gameState.index >= gameState.operations.length) {
+          return;
+        }
+
+        const value = Number(button.dataset.value);
+        const current = gameState.operations[gameState.index];
+
+        if (value === current.product) {
+          button.dataset.state = "correct";
+          button.disabled = true;
+          gameState.correct += 1;
+          gameState.index += 1;
+          showStatus("Cible neutralis&eacute;e !", true);
+          if (gameState.index >= gameState.operations.length) {
+            updateHud();
+            finishGame();
+            return;
+          }
+          showOperation();
+        } else {
+          button.dataset.state = "error";
+          gameState.errors += 1;
+          showStatus("La caravane doit se regrouper !", false);
+          window.setTimeout(function () {
+            if (button.dataset.state === "error") {
+              button.dataset.state = "hidden";
+            }
+          }, 450);
+          updateHud();
+        }
+      }
+
+      startButton.addEventListener("click", function () {
+        startGame();
+      });
+
+      resultsElement.addEventListener("click", handleResultClick);
+
+      prepareGame();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+

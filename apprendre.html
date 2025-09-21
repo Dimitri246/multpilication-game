@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apprendre les tables - Magic Wheel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="course-body">
+    <main class="course">
+      <header class="course__header">
+        <h1 class="course__title">Apprendre les tables</h1>
+        <p class="course__subtitle">
+          Des astuces colorées et amusantes pour retenir les multiplications sans se
+          prendre la tête.
+        </p>
+        <div class="course__nav">
+          <a class="nav-btn nav-btn--link" href="index.html">Retour au jeu</a>
+          <a class="nav-btn nav-btn--link" href="#astuces">Mémos rapides</a>
+        </div>
+      </header>
+
+      <section class="course__grid" aria-label="Cours illustrés">
+        <article class="course-card course-card--warm">
+          <span class="course-card__badge">Niveau facile</span>
+          <h2 class="course-card__title">Tables 1 à 3</h2>
+          <p class="course-card__text">
+            On commence en douceur avec des situations du quotidien et des répétitions
+            toutes simples.
+          </p>
+          <figure class="course-card__illustration" aria-hidden="true">
+            <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="20" width="180" height="10" rx="5" fill="#FFB347" />
+              <rect x="10" y="60" width="180" height="10" rx="5" fill="#FFD166" />
+              <rect x="10" y="100" width="180" height="10" rx="5" fill="#F6A5C0" />
+              <circle cx="50" cy="25" r="12" fill="#FF7F50" />
+              <circle cx="90" cy="65" r="12" fill="#FF7F50" />
+              <circle cx="130" cy="105" r="12" fill="#FF7F50" />
+              <circle cx="170" cy="105" r="12" fill="#FF7F50" />
+            </svg>
+          </figure>
+          <ul class="course-card__list">
+            <li>Table de 1 : chaque objet garde sa valeur, facile !</li>
+            <li>
+              Table de 2 : imagine des paires de chaussettes ou des mains qui se
+              saluent.
+            </li>
+            <li>
+              Table de 3 : avance de trois cases sur une marelle dessinée à la craie.
+            </li>
+          </ul>
+        </article>
+
+        <article class="course-card course-card--cool">
+          <span class="course-card__badge">Niveau moyen</span>
+          <h2 class="course-card__title">Tables 4 à 6</h2>
+          <p class="course-card__text">
+            On muscle sa mémoire avec des décompositions et des images mentales
+            rigolotes.
+          </p>
+          <figure class="course-card__illustration" aria-hidden="true">
+            <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="30" y="30" width="40" height="80" rx="20" fill="#6C5CE7" />
+              <rect x="85" y="20" width="40" height="100" rx="20" fill="#A29BFE" />
+              <rect x="140" y="40" width="40" height="80" rx="20" fill="#6C5CE7" />
+              <circle cx="50" cy="25" r="10" fill="#FFEAA7" />
+              <circle cx="105" cy="15" r="10" fill="#FFEAA7" />
+              <circle cx="160" cy="35" r="10" fill="#FFEAA7" />
+            </svg>
+          </figure>
+          <ul class="course-card__list">
+            <li>Table de 4 : pense à quatre roues qui tournent ensemble.</li>
+            <li>Table de 5 : compte les minutes d'une horloge (5, 10, 15...).</li>
+            <li>
+              Table de 6 : c'est 5 × n + n, ajoute toujours le nombre choisi à sa table
+              de 5.
+            </li>
+          </ul>
+        </article>
+
+        <article class="course-card course-card--warm">
+          <span class="course-card__badge">Niveau confirmé</span>
+          <h2 class="course-card__title">Tables 7 à 9</h2>
+          <p class="course-card__text">
+            Des astuces malines pour les tables qui demandent un peu plus de
+            concentration.
+          </p>
+          <figure class="course-card__illustration" aria-hidden="true">
+            <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="40,120 60,40 80,120" fill="#FFD166" />
+              <polygon points="100,120 120,30 140,120" fill="#FF7F50" />
+              <polygon points="150,120 170,55 190,120" fill="#6C5CE7" />
+              <circle cx="120" cy="25" r="10" fill="#FFEAA7" />
+              <circle cx="170" cy="50" r="10" fill="#FFEAA7" />
+            </svg>
+          </figure>
+          <ul class="course-card__list">
+            <li>Table de 7 : repère les doubles (7 × 4 et 7 × 8 se répondent).</li>
+            <li>Table de 8 : imagine des cubes empilés, 2 × 2 × 2 = 8.</li>
+            <li>Table de 9 : fais 10 × n puis enlève n : 9 × 6 = 60 - 6.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="course__tips" id="astuces">
+        <h2 class="course__tips-title">Mémos rapides à retenir</h2>
+        <div class="course__tips-grid">
+          <article class="course__tip">
+            <h3 class="course__tip-title">Super pouvoirs</h3>
+            <ul class="course__tip-list">
+              <li>0 multiplié par n'importe quoi reste 0.</li>
+              <li>1 conserve le nombre (1 × 8 = 8).</li>
+              <li>10 ajoute un zéro : 10 × 7 = 70.</li>
+            </ul>
+          </article>
+
+          <article class="course__tip">
+            <h3 class="course__tip-title">Astuces visuelles</h3>
+            <ul class="course__tip-list">
+              <li>Plie un doigt pour la table de 9 et lis le résultat.</li>
+              <li>
+                Dessine de petites grappes d'objets pour voir les paquets multipliés.
+              </li>
+              <li>Chante les résultats sur ta musique préférée.</li>
+            </ul>
+          </article>
+
+          <article class="course__tip">
+            <h3 class="course__tip-title">Routine facile</h3>
+            <ul class="course__tip-list">
+              <li>Révise 5 minutes le matin, 5 minutes le soir.</li>
+              <li>Note les résultats difficiles sur des cartes colorées.</li>
+              <li>Teste-toi avec la roulette magique pour t'encourager.</li>
+            </ul>
+          </article>
+        </div>
+        <p class="course__closing">
+          Prêt·e à lancer la roue magique ? Retourne dans le jeu et cumule les étoiles !
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
+
+

@@ -1,0 +1,466 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory multi - Magic Wheel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet" />
+        <style>
+      :root {
+        --bg-game: linear-gradient(140deg, #f5f3ff 0%, #f0f9ff 50%, #fff5fb 100%);
+        --surface: #ffffff;
+        --primary: #6c5ce7;
+        --primary-dark: #4f3ac8;
+        --accent: #ff7f50;
+        --success: #00b894;
+        --text: #2f1c6a;
+        --muted: #5e5a80;
+        --shadow: 0 30px 70px -48px rgba(76, 55, 140, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg-game);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app {
+        width: min(960px, 94%);
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) 0 3rem;
+        display: grid;
+        gap: clamp(1.8rem, 4vw, 2.4rem);
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 26px;
+        padding: clamp(1.6rem, 3vw, 2.4rem);
+        box-shadow: var(--shadow);
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+        text-align: center;
+        color: var(--primary);
+      }
+
+      .subtitle {
+        margin: 0;
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .select {
+        padding: 0.75rem 1.25rem;
+        border-radius: 16px;
+        border: 2px solid rgba(108, 92, 231, 0.25);
+        font-size: 1rem;
+        font-family: inherit;
+        background: #fff;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 18px;
+        padding: 0.85rem 1.9rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--primary);
+        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.6);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+
+      .hud__item {
+        background: rgba(108, 92, 231, 0.1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        text-align: center;
+      }
+
+      .hud__label {
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .hud__value {
+        margin-top: 0.35rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        position: relative;
+        height: 110px;
+        border-radius: 20px;
+        background: #f4edff;
+        border: 2px solid rgba(108, 92, 231, 0.18);
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        user-select: none;
+        box-shadow: 0 20px 55px -38px rgba(108, 92, 231, 0.55);
+      }
+
+      .card[data-state="hidden"]:hover {
+        transform: translateY(-3px);
+      }
+
+      .card[data-state="flipped"],
+      .card[data-state="matched"] {
+        background: #fff;
+        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.6);
+      }
+
+      .card[data-state="matched"] {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .status {
+        min-height: 1.5rem;
+        text-align: center;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .status--success {
+        color: var(--success);
+      }
+
+      @media (max-width: 720px) {
+        .grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .card {
+          height: 100px;
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <h1>Memory multi</h1>
+        <p class="subtitle">Rassemble les fragments du grimoire et ranime la magie des tables.</p>
+      </section>
+
+      <section class="panel">
+        <div class="controls">
+          <label for="table-select">Table choisie :</label>
+          <select class="select" id="table-select" aria-label="Choix de la table">
+            <option value="1">Table de 1</option>
+            <option value="2">Table de 2</option>
+            <option value="3">Table de 3</option>
+            <option value="4">Table de 4</option>
+            <option value="5">Table de 5</option>
+            <option value="6" selected>Table de 6</option>
+            <option value="7">Table de 7</option>
+            <option value="8">Table de 8</option>
+            <option value="9">Table de 9</option>
+            <option value="10">Table de 10</option>
+          </select>
+          <button class="btn" id="start-btn" type="button">Lancer la partie</button>
+          <a class="home-link" href="index.html">&larr; Retour &agrave; l'accueil</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="hud">
+          <div class="hud__item">
+            <span class="hud__label">🔮 Sorts lanc&eacute;s</span>
+            <span class="hud__value" id="moves">🔮 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">📚 Paires restaur&eacute;es</span>
+            <span class="hud__value" id="matches">📚 0 / 6</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⏱️ Chrono</span>
+            <span class="hud__value" id="timer">⏱️ 00:00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="grid" id="grid" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <p class="status" id="status"></p>
+      </section>
+    </main>
+
+    <script>
+      const TOTAL_PAIRS = 6;
+      const FLIP_DELAY = 800;
+
+      const tableSelect = document.getElementById("table-select");
+      const startButton = document.getElementById("start-btn");
+      const gridElement = document.getElementById("grid");
+      const movesElement = document.getElementById("moves");
+      const matchesElement = document.getElementById("matches");
+      const timerElement = document.getElementById("timer");
+      const statusElement = document.getElementById("status");
+
+      let cards = [];
+      let flipped = [];
+      let matchedIds = new Set();
+      let moves = 0;
+      let matches = 0;
+      let timerId = null;
+      let startTime = null;
+      let lockBoard = false;
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+
+      function updateTimer() {
+        if (!startTime) {
+          timerElement.textContent = "⏱️ 00:00";
+          return;
+        }
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+        const seconds = String(elapsed % 60).padStart(2, "0");
+        timerElement.textContent = "⏱️ " + minutes + ":" + seconds;
+      }
+
+      function startTimer() {
+        stopTimer();
+        startTime = Date.now();
+        updateTimer();
+        timerId = window.setInterval(updateTimer, 1000);
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          window.clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function clearStatus() {
+        statusElement.textContent = "";
+        statusElement.classList.remove("status--success");
+      }
+
+      function showStatus(message, success) {
+        statusElement.textContent = message;
+        statusElement.classList.toggle("status--success", success);
+      }
+
+      function buildPairs(tableValue) {
+        const multipliers = shuffle(Array.from({ length: 10 }, function (_, index) {
+          return index + 1;
+        })).slice(0, TOTAL_PAIRS);
+
+        const built = [];
+        multipliers.forEach(function (multiplier, index) {
+          const result = tableValue * multiplier;
+          const matchId = "pair-" + index;
+          built.push(
+            { id: matchId + "-op", type: "operation", face: tableValue + " x " + multiplier, matchId: matchId },
+            { id: matchId + "-res", type: "result", face: String(result), matchId: matchId }
+          );
+        });
+        return shuffle(built);
+      }
+
+      function renderCards(list) {
+        gridElement.innerHTML = "";
+        list.forEach(function (card) {
+          const element = document.createElement("button");
+          element.className = "card";
+          element.type = "button";
+          element.dataset.id = card.id;
+          element.dataset.match = card.matchId;
+          element.dataset.state = "hidden";
+          element.textContent = "?";
+          gridElement.append(element);
+        });
+      }
+
+      function revealCard(element, card) {
+        element.dataset.state = "flipped";
+        element.textContent = card.face;
+      }
+
+      function hideCard(element) {
+        element.dataset.state = "hidden";
+        element.textContent = "?";
+      }
+
+      function lockCard(element) {
+        element.dataset.state = "matched";
+        element.textContent = element.textContent;
+      }
+
+      function updateHud() {
+        movesElement.textContent = "👣 " + moves;
+        matchesElement.textContent = "🧩 " + matches + " / " + TOTAL_PAIRS;
+      }
+
+      function onCardClick(event) {
+        const target = event.target;
+        if (!target.classList.contains("card") || lockBoard) {
+          return;
+        }
+        if (target.dataset.state !== "hidden") {
+          return;
+        }
+        const card = cards.find(function (item) {
+          return item.id === target.dataset.id;
+        });
+        if (!card) {
+          return;
+        }
+
+        revealCard(target, card);
+        flipped.push({ element: target, card: card });
+
+        if (flipped.length === 2) {
+          lockBoard = true;
+          moves += 1;
+          updateHud();
+          evaluateMatch();
+        }
+      }
+
+      function evaluateMatch() {
+        const first = flipped[0];
+        const second = flipped[1];
+        if (first.card.matchId === second.card.matchId && first.card.type !== second.card.type) {
+          matchedIds.add(first.card.matchId);
+          lockCard(first.element);
+          lockCard(second.element);
+          matches += 1;
+          showStatus("Sort r&eacute;ussi !", true);
+          flipped = [];
+          lockBoard = false;
+          if (matches >= TOTAL_PAIRS) {
+            finishGame();
+          }
+        } else {
+          showStatus("Le grimoire reste ferm&eacute;...", false);
+          window.setTimeout(function () {
+            hideCard(first.element);
+            hideCard(second.element);
+            flipped = [];
+            lockBoard = false;
+          }, FLIP_DELAY);
+        }
+      }
+
+      function finishGame() {
+        stopTimer();
+        showStatus("Le grimoire est complet !", true);
+      }
+
+      function prepareGame() {
+        stopTimer();
+        startTime = null;
+        cards = [];
+        flipped = [];
+        matchedIds = new Set();
+        moves = 0;
+        matches = 0;
+        lockBoard = false;
+        renderCards([]);
+        updateHud();
+        updateTimer();
+        clearStatus();
+      }
+
+      function startGame() {
+        stopTimer();
+        const tableValue = Number(tableSelect.value);
+        cards = buildPairs(tableValue);
+        flipped = [];
+        matchedIds = new Set();
+        moves = 0;
+        matches = 0;
+        lockBoard = false;
+        updateHud();
+        clearStatus();
+        renderCards(cards);
+        startTimer();
+      }
+
+      gridElement.addEventListener("click", onCardClick);
+      startButton.addEventListener("click", function () {
+        startGame();
+      });
+
+      prepareGame();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+

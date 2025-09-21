@@ -1,0 +1,508 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bingo des multiplications</title>
+        <style>
+      :root {
+        --bg-game: linear-gradient(140deg, #f5f3ff 0%, #f0f9ff 50%, #fff5fb 100%);
+        --surface: #ffffff;
+        --primary: #6c5ce7;
+        --primary-dark: #4f3ac8;
+        --accent: #ff7f50;
+        --success: #00b894;
+        --text: #2f1c6a;
+        --muted: #5e5a80;
+        --shadow: 0 30px 70px -48px rgba(76, 55, 140, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Baloo 2", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg-game);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app {
+        width: min(960px, 94%);
+        margin: 0 auto;
+        padding: clamp(2rem, 5vw, 3.5rem) 0 3rem;
+        display: grid;
+        gap: clamp(1.8rem, 4vw, 2.4rem);
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 26px;
+        padding: clamp(1.6rem, 3vw, 2.3rem);
+        box-shadow: var(--shadow);
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+        text-align: center;
+        color: var(--primary);
+      }
+
+      .subtitle {
+        margin: 0;
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--muted);
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+
+      .hud__item {
+        background: rgba(108, 92, 231, 0.1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        text-align: center;
+      }
+
+      .hud__label {
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .hud__value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-top: 0.35rem;
+        color: var(--primary-dark);
+      }
+
+      .operation {
+        font-size: clamp(2.3rem, 6vw, 3.5rem);
+        font-weight: 700;
+        text-align: center;
+        margin: 0;
+        color: var(--primary);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .cell {
+        position: relative;
+        border: none;
+        border-radius: 20px;
+        padding: clamp(1.25rem, 3vw, 1.9rem);
+        font-size: clamp(1.25rem, 3vw, 1.7rem);
+        font-weight: 700;
+        color: var(--text);
+        background: #fff;
+        box-shadow: 0 20px 55px -38px rgba(108, 92, 231, 0.65);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+      }
+
+      .cell:hover:not([data-state="locked"]) {
+        transform: translateY(-3px);
+      }
+
+      .cell[data-state="locked"] {
+        background: rgba(0, 184, 148, 0.18);
+        color: var(--success);
+        cursor: default;
+        box-shadow: none;
+      }
+
+      .cell[data-state="locked"]::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 3px solid var(--success);
+        pointer-events: none;
+      }
+
+      .cell[data-state="error"] {
+        animation: pulse 0.45s ease-in-out 2;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          background: #fff;
+        }
+        50% {
+          background: rgba(255, 118, 117, 0.18);
+        }
+      }
+
+      .status {
+        text-align: center;
+        font-size: 1.05rem;
+        min-height: 1.5rem;
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .status--success {
+        color: var(--success);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 18px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.85rem 1.9rem;
+        cursor: pointer;
+        box-shadow: 0 20px 55px -36px rgba(108, 92, 231, 0.6);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+      }
+
+      .btn:focus-visible {
+        outline: 3px solid rgba(108, 92, 231, 0.35);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 640px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <h1>Butin du donjon</h1>
+        <p class="subtitle">R&eacute;cup&egrave;re les pi&egrave;ces d'or que les gobelins prot&egrave;gent avant la fin du sablier.</p>
+            <span class="hud__label">⏱️ Sablier</span>
+        </p>
+        <div class="actions actions--header">
+          <button class="btn" id="start-btn" type="button">Lancer</button>
+          <a class="home-link" href="index.html">&larr; Retour &agrave; l&#39;accueil</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="operation" id="operation">-- x -- ?</h2>
+        <div class="hud">
+          <div class="hud__item">
+            <span class="hud__label">🪙 Pi&egrave;ces r&eacute;colt&eacute;es</span>
+            <span class="hud__value" id="score">🪙 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">🎯 Coffres &agrave; ouvrir</span>
+            <span class="hud__value" id="goal">🎯 0</span>
+          </div>
+          <div class="hud__item">
+            <span class="hud__label">⏱️ Sablier</span>
+            <span class="hud__value" id="timer">⏱️ 00:00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="grid" id="grid" aria-label="Grille de bingo"></div>
+      </section>
+
+      <section class="panel">
+        <p class="status" id="status"></p>
+        <div class="actions">
+          <button class="btn" id="restart-btn" type="button">Relancer la collecte</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const GRID_SIZE = 16;
+      const GRID_DIMENSION = 4;
+      const CORRECT_TARGET = 8;
+      const MULTIPLICANDS = Array.from({ length: 10 }, function (_, index) {
+        return index + 1;
+      });
+      const MULTIPLIERS = MULTIPLICANDS.slice();
+      const MULTIPLE_VALUES = Array.from({ length: 10 }, function (_, index) {
+        return (index + 1) * 10;
+      });
+
+      const gridElement = document.getElementById("grid");
+      const operationElement = document.getElementById("operation");
+      const scoreElement = document.getElementById("score");
+      const goalElement = document.getElementById("goal");
+      const timerElement = document.getElementById("timer");
+      const statusElement = document.getElementById("status");
+      const restartButton = document.getElementById("restart-btn");
+      const startButton = document.getElementById("start-btn");
+
+      let operations = [];
+      let currentIndex = 0;
+      let solvedCount = 0;
+      let startTime = null;
+      let timerId = null;
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+
+      function buildOperations() {
+        const combos = [];
+
+        MULTIPLICANDS.forEach(function (a) {
+          MULTIPLIERS.forEach(function (b) {
+            const product = a * b;
+            if (product > 100 || product % 10 !== 0) {
+              return;
+            }
+            combos.push({ a, b, result: product });
+          });
+        });
+
+        shuffle(combos);
+
+        const unique = [];
+        const seen = new Set();
+        for (let index = 0; index < combos.length && unique.length < CORRECT_TARGET; index += 1) {
+          const combo = combos[index];
+          if (seen.has(combo.result)) {
+            continue;
+          }
+          seen.add(combo.result);
+          unique.push(combo);
+        }
+
+        return unique;
+      }
+
+      function buildDistractors(correctResults) {
+        const forbidden = new Set(correctResults);
+        const basePool = MULTIPLE_VALUES.filter(function (value) {
+          return !forbidden.has(value);
+        });
+        const pool = basePool.length > 0 ? basePool : MULTIPLE_VALUES.slice();
+
+        const values = [];
+        const needed = GRID_SIZE - correctResults.length;
+        for (let index = 0; index < needed; index += 1) {
+          const value = pool[Math.floor(Math.random() * pool.length)];
+          values.push(value);
+        }
+        return shuffle(values);
+      }
+
+      function renderGrid(values) {
+        gridElement.innerHTML = "";
+        values.forEach(function (value, cellIndex) {
+          const button = document.createElement("button");
+          button.className = "cell";
+          button.type = "button";
+          button.textContent = value;
+          button.dataset.index = cellIndex;
+          button.dataset.state = "";
+          gridElement.append(button);
+        });
+      }
+
+      function updateHud() {
+        scoreElement.textContent = "🪙 " + solvedCount;
+        goalElement.textContent = "🎯 " + operations.length;
+
+        if (currentIndex < operations.length) {
+          const op = operations[currentIndex];
+          operationElement.textContent = op.a + " x " + op.b + " ?";
+        } else if (operations.length > 0) {
+          operationElement.textContent = "Tr&eacute;sor complet !";
+        }
+      }
+
+      function clearStatus() {
+        statusElement.textContent = "";
+        statusElement.classList.remove("status--success");
+      }
+
+      function showSuccess(message) {
+        statusElement.textContent = message;
+        statusElement.classList.add("status--success");
+      }
+
+      function showError(message) {
+        statusElement.textContent = message;
+        statusElement.classList.remove("status--success");
+      }
+
+      function lockCell(button) {
+        button.dataset.state = "locked";
+        button.disabled = true;
+        solvedCount += 1;
+        showSuccess("Pi&egrave;ce d&#39;or trouv&eacute;e !");
+        advanceOperation();
+      }
+
+      function advanceOperation() {
+        currentIndex += 1;
+        updateHud();
+        if (solvedCount >= operations.length) {
+          endGame();
+        }
+      }
+
+      function handleCellClick(event) {
+        const target = event.target;
+        if (!target.classList.contains("cell")) {
+          return;
+        }
+
+        if (target.dataset.state === "locked" || currentIndex >= operations.length) {
+          return;
+        }
+
+        const value = Number(target.textContent);
+        const expected = operations[currentIndex].result;
+
+        if (value === expected) {
+          lockCell(target);
+        } else {
+          target.dataset.state = "error";
+          showError("Un gobelin garde encore ce coffre...");
+          window.setTimeout(function () {
+            if (target.dataset.state === "error") {
+              target.dataset.state = "";
+            }
+          }, 600);
+        }
+      }
+
+      function updateTimer() {
+        if (!startTime) {
+          timerElement.textContent = "⏱️ 00:00";
+          return;
+        }
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+        const seconds = String(elapsed % 60).padStart(2, "0");
+        timerElement.textContent = "⏱️ " + minutes + ":" + seconds;
+      }
+
+      function startTimer() {
+        stopTimer();
+        startTime = Date.now();
+        updateTimer();
+        timerId = window.setInterval(updateTimer, 1000);
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          window.clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function endGame() {
+        stopTimer();
+        showSuccess("Tr&eacute;sor complet !");
+        operationElement.textContent = "Tr&eacute;sor complet !";
+        gridElement.querySelectorAll(".cell").forEach(function (cell) {
+          if (cell.dataset.state !== "locked") {
+            cell.dataset.state = "locked";
+            cell.disabled = true;
+          }
+        });
+      }
+
+      function resetGameView() {
+        stopTimer();
+        operations = [];
+        currentIndex = 0;
+        solvedCount = 0;
+        startTime = null;
+        renderGrid([]);
+        operationElement.textContent = "-- x -- ?";
+        scoreElement.textContent = "🪙 " + solvedCount;
+        goalElement.textContent = "🎯 " + operations.length;
+        timerElement.textContent = "⏱️ 00:00";
+        clearStatus();
+      }
+
+      function startGame() {
+        stopTimer();
+        operations = buildOperations();
+        currentIndex = 0;
+        solvedCount = 0;
+        clearStatus();
+
+        const correctValues = operations.map(function (op) {
+          return op.result;
+        });
+        const distractors = buildDistractors(correctValues);
+        const cells = shuffle(correctValues.concat(distractors));
+
+        renderGrid(cells);
+        updateHud();
+        startTimer();
+      }
+
+      gridElement.addEventListener("click", handleCellClick);
+      restartButton.addEventListener("click", function () {
+        startGame();
+      });
+
+      if (startButton) {
+        startButton.addEventListener("click", function () {
+          startGame();
+        });
+      }
+
+      resetGameView();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
