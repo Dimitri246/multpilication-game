@@ -265,6 +265,8 @@
       let startTime = null;
       let lockBoard = false;
 
+      applyQueryParameters();
+
       function shuffle(array) {
         for (let i = array.length - 1; i > 0; i -= 1) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -308,6 +310,22 @@
       function showStatus(message, success) {
         statusElement.textContent = message;
         statusElement.classList.toggle("status--success", success);
+      }
+
+      function applyQueryParameters() {
+        if (!tableSelect) {
+          return;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const tableParam = params.get("table");
+        if (!tableParam) {
+          return;
+        }
+        const value = Number(tableParam);
+        if (!Number.isInteger(value) || value < 1 || value > 10) {
+          return;
+        }
+        tableSelect.value = String(value);
       }
 
       function buildPairs(tableValue) {
