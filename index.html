@@ -6,7 +6,10 @@
     <title>Magic Wheel - Quête des multiplications</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         color-scheme: light;
@@ -61,10 +64,8 @@
         gap: 1.2rem;
       }
 
-      .intro {
-        text-align: center;
+      .panel.intro {
         background: var(--surface-strong);
-        box-shadow: var(--shadow);
       }
 
       .intro__badge {
@@ -97,6 +98,148 @@
         color: var(--primary-dark);
       }
 
+      h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        color: var(--primary-dark);
+      }
+
+      .home-menu {
+        text-align: center;
+      }
+
+      .menu-grid {
+        display: grid;
+        gap: clamp(1rem, 3vw, 1.6rem);
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        margin-top: 1rem;
+      }
+
+      .menu-card {
+        border: 2px solid transparent;
+        border-radius: 24px;
+        padding: clamp(1.2rem, 3vw, 1.8rem);
+        text-align: left;
+        background: var(--surface);
+        box-shadow: var(--shadow-soft);
+        color: inherit;
+        font-family: inherit;
+        cursor: pointer;
+        display: grid;
+        gap: 0.75rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-card:hover,
+      .menu-card:focus-visible {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow);
+        outline: none;
+      }
+
+      .menu-card:focus-visible {
+        border-color: var(--primary);
+      }
+
+      .menu-card__label {
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .menu-card__title {
+        margin: 0;
+        font-size: 1.6rem;
+        color: var(--primary-dark);
+      }
+
+      .menu-card__text {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .menu-card__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1rem;
+      }
+
+      .menu-card__cta::after {
+        content: "→";
+        font-size: 1.1rem;
+      }
+      }
+
+      .section-stack {
+        display: grid;
+        gap: clamp(1.4rem, 3vw, 2rem);
+      }
+
+      .section-head {
+        background: var(--surface-strong);
+        align-items: center;
+      }
+
+      .section-head__title {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .section-head__eyebrow {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: var(--accent);
+      }
+
+      .section-head__title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .secondary-btn {
+        align-self: flex-start;
+        border: 2px solid rgba(108, 92, 231, 0.18);
+        border-radius: 18px;
+        padding: 0.65rem 1.4rem;
+        font-size: 0.98rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.75);
+        color: var(--primary-dark);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+        font-family: inherit;
+      }
+
+      .secondary-btn:hover,
+      .secondary-btn:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+        border-color: var(--primary);
+        outline: none;
+      }
+
+      .adventure-grid {
+        background: var(--surface-strong);
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .adventure-column {
+        display: grid;
+        gap: 0.9rem;
+      }
+
       .selector-grid,
       .level-grid {
         display: grid;
@@ -121,9 +264,12 @@
       }
 
       button.character-card:hover,
-      button.level-card:hover {
+      button.character-card:focus-visible,
+      button.level-card:hover,
+      button.level-card:focus-visible {
         transform: translateY(-3px);
         box-shadow: var(--shadow);
+        outline: none;
       }
 
       button.character-card[data-selected="true"],
@@ -195,15 +341,138 @@
         color: var(--muted);
       }
 
-      .panel--launch {
-        justify-items: center;
-        text-align: center;
+      .quest-runner {
+        background: var(--surface-strong);
+        gap: clamp(1.2rem, 3vw, 1.8rem);
       }
 
-      .panel__note {
+      .quest-runner__header {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .quest-runner__intro {
+        display: grid;
+        gap: 0.4rem;
+      }
+
+      .quest-runner__eyebrow {
+        margin: 0;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .quest-runner__text {
         margin: 0;
         font-size: 1.05rem;
         color: var(--muted);
+      }
+
+      .quest-runner__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-size: 0.98rem;
+        color: var(--muted);
+      }
+
+      .quest-runner__range {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .quest-progress {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .quest-progress__track {
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(108, 92, 231, 0.12);
+        overflow: hidden;
+      }
+
+      .quest-progress__fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(120deg, var(--primary), #8e7bff);
+        border-radius: inherit;
+        transition: width 0.25s ease;
+      }
+
+      .quest-progress__info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .quest-runner__body {
+        display: grid;
+        gap: clamp(1.2rem, 3vw, 1.8rem);
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr);
+        align-items: start;
+      }
+
+      .quest-step {
+        background: rgba(108, 92, 231, 0.07);
+        border-radius: 22px;
+        padding: clamp(1.2rem, 3vw, 1.6rem);
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .quest-step__header {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .quest-step__narrative {
+        margin: 0;
+        font-size: 1.05rem;
+        color: var(--muted);
+      }
+
+      .quest-step__meta {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .quest-step__tip {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .quest-step figure {
+        margin: 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(108, 92, 231, 0.12);
+      }
+
+      .quest-step figcaption {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.8);
+        margin: 0;
+      }
+
+      .quest-step__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
 
       .primary-btn {
@@ -218,246 +487,176 @@
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         font-family: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
       }
 
-      .primary-btn:hover:not(:disabled) {
+      .primary-btn:hover,
+      .primary-btn:focus-visible {
         transform: translateY(-3px);
         box-shadow: var(--shadow);
+        outline: none;
       }
 
-      .primary-btn:disabled {
-        opacity: 0.6;
-        cursor: default;
-        box-shadow: none;
-        transform: none;
+      .quest-log {
+        display: grid;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 22px;
+        padding: clamp(1.1rem, 3vw, 1.5rem);
       }
 
-      .quest-story {
-        background: var(--surface-strong);
-      }
-
-      .quest-story__header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-      }
-
-      .quest-story__duration {
+      .quest-log h3 {
+        font-size: 1.2rem;
         margin: 0;
-        font-size: 1rem;
-        font-weight: 600;
         color: var(--primary-dark);
       }
 
-      .quest-story__intro,
-      .quest-story__conclusion {
+      .timeline {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .timeline__item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 16px;
+        background: rgba(108, 92, 231, 0.08);
+        color: var(--muted);
+        font-size: 0.9rem;
+        border: 2px solid transparent;
+      }
+
+      .timeline__badge {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--primary-dark);
+        background: rgba(108, 92, 231, 0.12);
+      }
+
+      .timeline__title {
+        margin: 0;
+        font-weight: 600;
+        color: var(--primary-dark);
+        font-size: 0.98rem;
+      }
+
+      .timeline__meta {
+        margin: 0;
+        font-size: 0.85rem;
+      }
+
+      .timeline__status {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--primary);
+      }
+
+      .timeline__item--done {
+        border-color: rgba(0, 184, 148, 0.35);
+        background: rgba(0, 184, 148, 0.12);
+      }
+
+      .timeline__item--done .timeline__status {
+        color: var(--success);
+      }
+
+      .timeline__item--current {
+        border-color: rgba(108, 92, 231, 0.35);
+        background: rgba(108, 92, 231, 0.18);
+      }
+
+      .milestones {
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .milestone {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        border-radius: 16px;
+        background: rgba(0, 184, 148, 0.12);
+        color: var(--success);
+        font-size: 0.95rem;
+      }
+
+      .milestone:nth-child(odd) {
+        background: rgba(108, 92, 231, 0.12);
+        color: var(--primary-dark);
+      }
+      .quest-step__conclusion {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .quest-step__conclusion p {
         margin: 0;
         font-size: 1.05rem;
         color: var(--muted);
       }
 
-      .chapter-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 1.1rem;
+      .mini-grid {
+        background: var(--surface-strong);
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       }
 
-      .chapter {
-        background: rgba(108, 92, 231, 0.08);
+      .mini-card {
+        display: grid;
+        gap: 0.65rem;
+        background: rgba(108, 92, 231, 0.07);
         border-radius: 22px;
-        padding: clamp(1.2rem, 3vw, 1.6rem);
-        border: 2px solid transparent;
-        display: grid;
-        gap: 0.7rem;
-        position: relative;
+        padding: clamp(1.1rem, 3vw, 1.6rem);
       }
 
-      .chapter__header {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 0.75rem;
+      .mini-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.98rem;
       }
 
-      .chapter__header--interactive {
-        cursor: pointer;
-      }
-
-      .chapter__header--interactive:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.25);
-        border-radius: 16px;
-        background: rgba(108, 92, 231, 0.12);
-      }
-
-      .chapter__tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(108, 92, 231, 0.18);
-        color: var(--primary-dark);
-        font-weight: 600;
-        font-size: 0.95rem;
-      }
-
-      .chapter__title-wrap {
+      .mini-card ul {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: var(--muted);
+        font-size: 0.9rem;
         display: grid;
         gap: 0.2rem;
       }
 
-      .chapter__title {
-        margin: 0;
-        font-size: 1.25rem;
-        color: var(--primary-dark);
-      }
-
-      .chapter__duration {
-        font-size: 0.95rem;
-        color: var(--muted);
-        font-weight: 600;
-      }
-
-      .chapter__chevron {
-        width: 1.5rem;
-        height: 1.5rem;
-        border-radius: 50%;
-        display: inline-flex;
+      .mini-card__actions {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        background: rgba(108, 92, 231, 0.18);
-        color: var(--primary-dark);
-        font-size: 0.85rem;
-        transition: transform 0.2s ease;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
       }
 
-      .chapter__body {
-        display: grid;
-        gap: 0.7rem;
-      }
-
-      .chapter__illustration {
-        margin: 0;
-        border-radius: 18px;
-        overflow: hidden;
-        background: rgba(108, 92, 231, 0.12);
-      }
-
-      .chapter__illustration img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .chapter__illustration figcaption {
-        margin: 0;
-        padding: 0.6rem 0.9rem;
-        font-size: 0.85rem;
-        color: var(--muted);
-        background: rgba(255, 255, 255, 0.8);
-      }
-
-      .chapter__narrative,
-      .chapter__meta,
-      .chapter__tip {
-        margin: 0;
-        font-size: 0.98rem;
-        color: var(--muted);
-      }
-
-      .chapter__game {
-        margin: 0;
+      .mini-card__link {
         font-size: 1rem;
-        font-weight: 600;
-        color: var(--primary);
-      }
-
-      .chapter__actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-
-      .chapter--collapsed .chapter__body {
-        display: none;
-      }
-
-      .chapter--collapsed .chapter__chevron {
-        transform: rotate(-90deg);
-      }
-
-      .chapter__link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.6rem;
-        border-radius: 18px;
-        background: var(--primary);
-        color: #fff;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: var(--shadow-soft);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-      }
-
-      .chapter__link:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow);
-      }
-
-      .chapter__mark {
-        border: none;
-        border-radius: 18px;
-        padding: 0.75rem 1.4rem;
-        font-weight: 600;
-        font-size: 0.95rem;
-        background: rgba(108, 92, 231, 0.12);
-        color: var(--primary-dark);
-        cursor: pointer;
-        font-family: inherit;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
-      }
-
-      .chapter__mark:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-soft);
-      }
-
-      .chapter[data-completed="true"] {
-        border-color: var(--success);
-        background: rgba(0, 184, 148, 0.08);
-      }
-
-      .chapter[data-completed="true"] .chapter__tag {
-        background: rgba(0, 184, 148, 0.15);
-        color: var(--success);
-      }
-
-      .chapter[data-completed="true"] .chapter__mark {
-        background: rgba(0, 184, 148, 0.12);
-        color: var(--success);
-      }
-
-      .section-header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 0.75rem;
-      }
-
-      .section-header p {
-        margin: 0;
-        color: var(--muted);
+        padding-inline: 1.8rem;
       }
 
       .table-section {
         background: var(--surface-strong);
+      }
+
+      .table-section p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
       }
 
       .table-grid {
@@ -497,233 +696,356 @@
         color: var(--muted);
       }
 
+      @media (max-width: 900px) {
+        .quest-runner__body {
+          grid-template-columns: 1fr;
+        }
+
+        .secondary-btn {
+          justify-self: start;
+        }
+      }
+
       @media (max-width: 720px) {
-        .quest-story__header {
+        .quest-progress__info {
           flex-direction: column;
           align-items: flex-start;
         }
-        .chapter__actions {
+
+        .quest-step__actions {
           flex-direction: column;
           align-items: stretch;
         }
-        .chapter__link,
-        .chapter__mark {
+
+        .primary-btn {
           width: 100%;
-          justify-content: center;
         }
       }
     </style>
   </head>
   <body class="quest-home">
     <main class="quest">
-      <section class="panel intro">
-        <span class="intro__badge">✨ Nouvelle aventure</span>
-        <h1>Choisis ton héros et lance la quête</h1>
-        <p>
-          Trois mini-jeux reliés par une histoire à vivre en moins de 10 minutes.
-          Sélectionne ton compagnon et le niveau pour partir en mission.
-        </p>
-      </section>
-
-      <section class="panel">
-        <h2>1. Choisis ton personnage</h2>
-        <p class="panel__note">
-          Chaque héros dispose de son style : trouve celui qui te motive le plus.
-        </p>
-        <div class="selector-grid" id="character-options"></div>
-      </section>
-
-      <section class="panel">
-        <h2>2. Choisis le niveau</h2>
-        <p class="panel__note">
-          Les tables proposées s'adaptent à ton choix pour garder une difficulté cohérente.
-        </p>
-        <div class="level-grid" id="level-options"></div>
-      </section>
-
-      <section class="panel panel--launch">
-        <p class="panel__note" id="setup-note">
-          Choisis un héros et un niveau pour préparer la mission.
-        </p>
-        <button class="primary-btn" id="start-quest" type="button" disabled>
-          Lancer la quête
-        </button>
-      </section>
-
-      <section class="panel quest-story" id="quest-story" hidden>
-        <div class="quest-story__header">
-          <h2 id="quest-story-title">Ta légende commence</h2>
-          <p class="quest-story__duration" id="quest-duration"></p>
+      <section id="home-menu" class="panel intro home-menu">
+        <span class="intro__badge">✨ Trois voies pour progresser</span>
+        <h1>Choisis ton mode d'entraînement</h1>
+        <p>Une aventure guidée, des mini-jeux éclairs ou les tables complètes : tout est au même endroit.</p>
+        <div class="menu-grid">
+          <button type="button" class="menu-card" data-target="adventure">
+            <span class="menu-card__label">A) Mode aventure</span>
+            <h2 class="menu-card__title">L'histoire dont tu es le héros</h2>
+            <p class="menu-card__text">
+              Compose ton équipe, fixe la difficulté et laisse les missions défiler automatiquement. Ta progression est suivie
+              pas à pas.
+            </p>
+            <span class="menu-card__cta">Entrer dans l'aventure</span>
+          </button>
+          <button type="button" class="menu-card" data-target="mini">
+            <span class="menu-card__label">B) Mini-jeux</span>
+            <h2 class="menu-card__title">Défis éclairs</h2>
+            <p class="menu-card__text">
+              Lances-toi dans des parties rapides de Roulette magique, Memory ou Bingo pour booster ton calcul mental en un clin
+              d'œil.
+            </p>
+            <span class="menu-card__cta">Voir les mini-jeux</span>
+          </button>
+          <button type="button" class="menu-card" data-target="tables">
+            <span class="menu-card__label">C) Tables</span>
+            <h2 class="menu-card__title">Tables 1 à 10</h2>
+            <p class="menu-card__text">
+              Accède aux tables de multiplication complètes pour réviser rapidement et vérifier tes réponses à tout moment.
+            </p>
+            <span class="menu-card__cta">Afficher les tables</span>
+          </button>
         </div>
-        <p class="quest-story__intro" id="quest-story-intro"></p>
-        <ol class="chapter-list" id="quest-chapters"></ol>
-        <p class="quest-story__conclusion" id="quest-conclusion"></p>
       </section>
 
-      <section class="panel table-section" id="tables">
-        <div class="section-header">
-          <h2>🔢 Tables de référence</h2>
-          <p>Garde ce mémo sous la main pendant ta quête.</p>
+      <section id="adventure-section" class="section-stack" hidden>
+        <header class="panel section-head">
+          <div class="section-head__title">
+            <p class="section-head__eyebrow">A) Mode aventure</p>
+            <h2>Compose ta compagnie</h2>
+            <p id="adventure-note">Choisis un héros et un niveau pour lancer la quête.</p>
+          </div>
+          <button type="button" class="secondary-btn" data-action="back-to-menu">← Retour au menu</button>
+        </header>
+
+        <div class="panel adventure-grid">
+          <div class="adventure-column">
+            <h3>Choisis ton héros</h3>
+            <div id="character-options" class="selector-grid"></div>
+          </div>
+          <div class="adventure-column">
+            <h3>Choisis ton niveau</h3>
+            <div id="level-options" class="level-grid"></div>
+          </div>
         </div>
-        <div class="table-grid">
-          <article class="table-card">
-            <h3>Table de 1</h3>
+
+        <section id="quest-runner" class="panel quest-runner" hidden>
+          <header class="quest-runner__header">
+            <div class="quest-runner__intro">
+              <p id="quest-runner-level" class="quest-runner__eyebrow"></p>
+              <h2 id="quest-runner-title"></h2>
+              <p id="quest-runner-intro" class="quest-runner__text"></p>
+            </div>
+            <div class="quest-runner__meta">
+              <p id="quest-runner-hero"></p>
+              <p id="quest-runner-range" class="quest-runner__range"></p>
+            </div>
+          </header>
+
+          <div class="quest-progress">
+            <div class="quest-progress__track">
+              <div id="quest-progress-fill" class="quest-progress__fill"></div>
+            </div>
+            <div class="quest-progress__info">
+              <span id="quest-progress-label"></span>
+              <span id="quest-progress-duration"></span>
+            </div>
+          </div>
+
+          <div class="quest-runner__body">
+            <article id="quest-step" class="quest-step" aria-live="polite"></article>
+            <aside class="quest-log">
+              <h3>Journal de progression</h3>
+              <ol id="quest-timeline" class="timeline"></ol>
+              <div id="quest-milestones" class="milestones" aria-live="polite" aria-atomic="false"></div>
+            </aside>
+          </div>
+        </section>
+      </section>
+      <section id="mini-games-section" class="section-stack" hidden>
+        <header class="panel section-head">
+          <div class="section-head__title">
+            <p class="section-head__eyebrow">B) Mini-jeux</p>
+            <h2>Défis éclairs</h2>
+            <p>Choisis un mini-jeu ciblé pour t'entraîner sans attendre.</p>
+          </div>
+          <button type="button" class="secondary-btn" data-action="back-to-menu">← Retour au menu</button>
+        </header>
+        <div class="panel mini-grid">
+          <article class="mini-card">
+            <h3>Roulette magique</h3>
+            <p>Réponds en temps limité et accumule les points pour sauver le village.</p>
             <ul>
-              <li>1 × 1 = 1</li>
-              <li>1 × 2 = 2</li>
-              <li>1 × 3 = 3</li>
-              <li>1 × 4 = 4</li>
-              <li>1 × 5 = 5</li>
-              <li>1 × 6 = 6</li>
-              <li>1 × 7 = 7</li>
-              <li>1 × 8 = 8</li>
-              <li>1 × 9 = 9</li>
-              <li>1 × 10 = 10</li>
+              <li>Mode classique avec sélection de tables</li>
+              <li>Questions chronométrées à 15 secondes</li>
+              <li>Compatible avec ordinateur et tablette</li>
             </ul>
+            <div class="mini-card__actions">
+              <a class="primary-btn mini-card__link" href="jeu.html">Lancer la roulette</a>
+            </div>
           </article>
-          <article class="table-card">
-            <h3>Table de 2</h3>
+          <article class="mini-card">
+            <h3>Memory multi</h3>
+            <p>Associe les cartes produit/résultat avant la fin du sablier.</p>
             <ul>
-              <li>2 × 1 = 2</li>
-              <li>2 × 2 = 4</li>
-              <li>2 × 3 = 6</li>
-              <li>2 × 4 = 8</li>
-              <li>2 × 5 = 10</li>
-              <li>2 × 6 = 12</li>
-              <li>2 × 7 = 14</li>
-              <li>2 × 8 = 16</li>
-              <li>2 × 9 = 18</li>
-              <li>2 × 10 = 20</li>
+              <li>Focus sur une table spécifique</li>
+              <li>Idéal pour mémoriser les résultats difficiles</li>
+              <li>Progression visible carte par carte</li>
             </ul>
+            <div class="mini-card__actions">
+              <a class="primary-btn mini-card__link" href="memory.html">Ouvrir Memory</a>
+            </div>
           </article>
-          <article class="table-card">
-            <h3>Table de 3</h3>
+          <article class="mini-card">
+            <h3>Table Rush</h3>
+            <p>Course contre la montre pour valider un maximum d'opérations.</p>
             <ul>
-              <li>3 × 1 = 3</li>
-              <li>3 × 2 = 6</li>
-              <li>3 × 3 = 9</li>
-              <li>3 × 4 = 12</li>
-              <li>3 × 5 = 15</li>
-              <li>3 × 6 = 18</li>
-              <li>3 × 7 = 21</li>
-              <li>3 × 8 = 24</li>
-              <li>3 × 9 = 27</li>
-              <li>3 × 10 = 30</li>
+              <li>Idéal pour travailler la vitesse</li>
+              <li>Mode arcade avec bonus et séries</li>
+              <li>Statistiques fin de partie</li>
             </ul>
+            <div class="mini-card__actions">
+              <a class="primary-btn mini-card__link" href="table-rush.html">Jouer à Table Rush</a>
+            </div>
           </article>
-          <article class="table-card">
-            <h3>Table de 4</h3>
+          <article class="mini-card">
+            <h3>Bingo &amp; Vrai ou Faux</h3>
+            <p>Deux variantes pour varier les défis entre stratégie et intuition.</p>
             <ul>
-              <li>4 × 1 = 4</li>
-              <li>4 × 2 = 8</li>
-              <li>4 × 3 = 12</li>
-              <li>4 × 4 = 16</li>
-              <li>4 × 5 = 20</li>
-              <li>4 × 6 = 24</li>
-              <li>4 × 7 = 28</li>
-              <li>4 × 8 = 32</li>
-              <li>4 × 9 = 36</li>
-              <li>4 × 10 = 40</li>
+              <li>Bingo multi pour remplir ta grille</li>
+              <li>Duel Vrai ou Faux pour des affirmations rapides</li>
+              <li>Parfait pour jouer à plusieurs</li>
             </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 5</h3>
-            <ul>
-              <li>5 × 1 = 5</li>
-              <li>5 × 2 = 10</li>
-              <li>5 × 3 = 15</li>
-              <li>5 × 4 = 20</li>
-              <li>5 × 5 = 25</li>
-              <li>5 × 6 = 30</li>
-              <li>5 × 7 = 35</li>
-              <li>5 × 8 = 40</li>
-              <li>5 × 9 = 45</li>
-              <li>5 × 10 = 50</li>
-            </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 6</h3>
-            <ul>
-              <li>6 × 1 = 6</li>
-              <li>6 × 2 = 12</li>
-              <li>6 × 3 = 18</li>
-              <li>6 × 4 = 24</li>
-              <li>6 × 5 = 30</li>
-              <li>6 × 6 = 36</li>
-              <li>6 × 7 = 42</li>
-              <li>6 × 8 = 48</li>
-              <li>6 × 9 = 54</li>
-              <li>6 × 10 = 60</li>
-            </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 7</h3>
-            <ul>
-              <li>7 × 1 = 7</li>
-              <li>7 × 2 = 14</li>
-              <li>7 × 3 = 21</li>
-              <li>7 × 4 = 28</li>
-              <li>7 × 5 = 35</li>
-              <li>7 × 6 = 42</li>
-              <li>7 × 7 = 49</li>
-              <li>7 × 8 = 56</li>
-              <li>7 × 9 = 63</li>
-              <li>7 × 10 = 70</li>
-            </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 8</h3>
-            <ul>
-              <li>8 × 1 = 8</li>
-              <li>8 × 2 = 16</li>
-              <li>8 × 3 = 24</li>
-              <li>8 × 4 = 32</li>
-              <li>8 × 5 = 40</li>
-              <li>8 × 6 = 48</li>
-              <li>8 × 7 = 56</li>
-              <li>8 × 8 = 64</li>
-              <li>8 × 9 = 72</li>
-              <li>8 × 10 = 80</li>
-            </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 9</h3>
-            <ul>
-              <li>9 × 1 = 9</li>
-              <li>9 × 2 = 18</li>
-              <li>9 × 3 = 27</li>
-              <li>9 × 4 = 36</li>
-              <li>9 × 5 = 45</li>
-              <li>9 × 6 = 54</li>
-              <li>9 × 7 = 63</li>
-              <li>9 × 8 = 72</li>
-              <li>9 × 9 = 81</li>
-              <li>9 × 10 = 90</li>
-            </ul>
-          </article>
-          <article class="table-card">
-            <h3>Table de 10</h3>
-            <ul>
-              <li>10 × 1 = 10</li>
-              <li>10 × 2 = 20</li>
-              <li>10 × 3 = 30</li>
-              <li>10 × 4 = 40</li>
-              <li>10 × 5 = 50</li>
-              <li>10 × 6 = 60</li>
-              <li>10 × 7 = 70</li>
-              <li>10 × 8 = 80</li>
-              <li>10 × 9 = 90</li>
-              <li>10 × 10 = 100</li>
-            </ul>
+            <div class="mini-card__actions">
+              <a class="primary-btn mini-card__link" href="bingo.html">Ouvrir Bingo</a>
+              <a class="primary-btn mini-card__link" href="vf.html">Lancer Vrai ou Faux</a>
+            </div>
           </article>
         </div>
+      </section>
+
+      <section id="tables-section" class="section-stack" hidden>
+        <header class="panel section-head">
+          <div class="section-head__title">
+            <p class="section-head__eyebrow">C) Tables</p>
+            <h2>Révise les tables 1 à 10</h2>
+            <p>Affiche les résultats en un coup d'œil pour vérifier ta mémoire.</p>
+          </div>
+          <button type="button" class="secondary-btn" data-action="back-to-menu">← Retour au menu</button>
+        </header>
+        <section class="panel table-section">
+          <h2>Tables complètes</h2>
+          <p>Un rappel rapide des tables de multiplication, à garder sous la main pendant la pratique.</p>
+          <div class="table-grid">
+            <article class="table-card">
+              <h3>Table de 1</h3>
+              <ul>
+                <li>1 × 1 = 1</li>
+                <li>1 × 2 = 2</li>
+                <li>1 × 3 = 3</li>
+                <li>1 × 4 = 4</li>
+                <li>1 × 5 = 5</li>
+                <li>1 × 6 = 6</li>
+                <li>1 × 7 = 7</li>
+                <li>1 × 8 = 8</li>
+                <li>1 × 9 = 9</li>
+                <li>1 × 10 = 10</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 2</h3>
+              <ul>
+                <li>2 × 1 = 2</li>
+                <li>2 × 2 = 4</li>
+                <li>2 × 3 = 6</li>
+                <li>2 × 4 = 8</li>
+                <li>2 × 5 = 10</li>
+                <li>2 × 6 = 12</li>
+                <li>2 × 7 = 14</li>
+                <li>2 × 8 = 16</li>
+                <li>2 × 9 = 18</li>
+                <li>2 × 10 = 20</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 3</h3>
+              <ul>
+                <li>3 × 1 = 3</li>
+                <li>3 × 2 = 6</li>
+                <li>3 × 3 = 9</li>
+                <li>3 × 4 = 12</li>
+                <li>3 × 5 = 15</li>
+                <li>3 × 6 = 18</li>
+                <li>3 × 7 = 21</li>
+                <li>3 × 8 = 24</li>
+                <li>3 × 9 = 27</li>
+                <li>3 × 10 = 30</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 4</h3>
+              <ul>
+                <li>4 × 1 = 4</li>
+                <li>4 × 2 = 8</li>
+                <li>4 × 3 = 12</li>
+                <li>4 × 4 = 16</li>
+                <li>4 × 5 = 20</li>
+                <li>4 × 6 = 24</li>
+                <li>4 × 7 = 28</li>
+                <li>4 × 8 = 32</li>
+                <li>4 × 9 = 36</li>
+                <li>4 × 10 = 40</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 5</h3>
+              <ul>
+                <li>5 × 1 = 5</li>
+                <li>5 × 2 = 10</li>
+                <li>5 × 3 = 15</li>
+                <li>5 × 4 = 20</li>
+                <li>5 × 5 = 25</li>
+                <li>5 × 6 = 30</li>
+                <li>5 × 7 = 35</li>
+                <li>5 × 8 = 40</li>
+                <li>5 × 9 = 45</li>
+                <li>5 × 10 = 50</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 6</h3>
+              <ul>
+                <li>6 × 1 = 6</li>
+                <li>6 × 2 = 12</li>
+                <li>6 × 3 = 18</li>
+                <li>6 × 4 = 24</li>
+                <li>6 × 5 = 30</li>
+                <li>6 × 6 = 36</li>
+                <li>6 × 7 = 42</li>
+                <li>6 × 8 = 48</li>
+                <li>6 × 9 = 54</li>
+                <li>6 × 10 = 60</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 7</h3>
+              <ul>
+                <li>7 × 1 = 7</li>
+                <li>7 × 2 = 14</li>
+                <li>7 × 3 = 21</li>
+                <li>7 × 4 = 28</li>
+                <li>7 × 5 = 35</li>
+                <li>7 × 6 = 42</li>
+                <li>7 × 7 = 49</li>
+                <li>7 × 8 = 56</li>
+                <li>7 × 9 = 63</li>
+                <li>7 × 10 = 70</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 8</h3>
+              <ul>
+                <li>8 × 1 = 8</li>
+                <li>8 × 2 = 16</li>
+                <li>8 × 3 = 24</li>
+                <li>8 × 4 = 32</li>
+                <li>8 × 5 = 40</li>
+                <li>8 × 6 = 48</li>
+                <li>8 × 7 = 56</li>
+                <li>8 × 8 = 64</li>
+                <li>8 × 9 = 72</li>
+                <li>8 × 10 = 80</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 9</h3>
+              <ul>
+                <li>9 × 1 = 9</li>
+                <li>9 × 2 = 18</li>
+                <li>9 × 3 = 27</li>
+                <li>9 × 4 = 36</li>
+                <li>9 × 5 = 45</li>
+                <li>9 × 6 = 54</li>
+                <li>9 × 7 = 63</li>
+                <li>9 × 8 = 72</li>
+                <li>9 × 9 = 81</li>
+                <li>9 × 10 = 90</li>
+              </ul>
+            </article>
+            <article class="table-card">
+              <h3>Table de 10</h3>
+              <ul>
+                <li>10 × 1 = 10</li>
+                <li>10 × 2 = 20</li>
+                <li>10 × 3 = 30</li>
+                <li>10 × 4 = 40</li>
+                <li>10 × 5 = 50</li>
+                <li>10 × 6 = 60</li>
+                <li>10 × 7 = 70</li>
+                <li>10 × 8 = 80</li>
+                <li>10 × 9 = 90</li>
+                <li>10 × 10 = 100</li>
+              </ul>
+            </article>
+          </div>
+        </section>
       </section>
     </main>
 
     <footer class="quest-footer">
-      © Magic Wheel — Une aventure de tables en moins de 10 minutes.
+      © Magic Wheel — Choisis un mode, progresse et amuse-toi avec les multiplications.
     </footer>
-
     <script>
       (function () {
         const QUEST_STORAGE_KEY = "mw-quest-selection";
@@ -735,55 +1057,95 @@
         }, {});
 
         const storedSelection = loadQuestSelection();
-        const chapterElements = [];
+        const storedHeroId = storedSelection && storedSelection.hero ? storedSelection.hero.id : null;
+        const storedLevelId = storedSelection && storedSelection.level ? storedSelection.level.id : null;
+
+        const sections = {
+          home: document.getElementById("home-menu"),
+          adventure: document.getElementById("adventure-section"),
+          mini: document.getElementById("mini-games-section"),
+          tables: document.getElementById("tables-section")
+        };
+
+        const menuButtons = document.querySelectorAll("[data-target]");
+        const backButtons = document.querySelectorAll('[data-action="back-to-menu"]');
+
+        menuButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            const target = button.dataset.target;
+            if (target === "adventure" || target === "mini" || target === "tables") {
+              showSection(target);
+            }
+          });
+        });
+
+        backButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            showSection("home");
+            if (sections.home) {
+              sections.home.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+        });
+
+        function showSection(name) {
+          Object.keys(sections).forEach(function (key) {
+            const section = sections[key];
+            if (!section) {
+              return;
+            }
+            section.hidden = key !== name;
+          });
+
+          if (name === "adventure") {
+            if (sections.adventure) {
+              sections.adventure.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            focusFirstCharacter();
+          }
+        }
 
         const characterContainer = document.getElementById("character-options");
         const levelContainer = document.getElementById("level-options");
-        const startButton = document.getElementById("start-quest");
-        const setupNote = document.getElementById("setup-note");
-        const storySection = document.getElementById("quest-story");
-        const storyTitle = document.getElementById("quest-story-title");
-        const storyIntro = document.getElementById("quest-story-intro");
-        const storyDuration = document.getElementById("quest-duration");
-        const chapterList = document.getElementById("quest-chapters");
-        const storyConclusion = document.getElementById("quest-conclusion");
+        const adventureNote = document.getElementById("adventure-note");
+
+        const questRunner = document.getElementById("quest-runner");
+        const questLevelLabel = document.getElementById("quest-runner-level");
+        const questTitle = document.getElementById("quest-runner-title");
+        const questIntro = document.getElementById("quest-runner-intro");
+        const questHero = document.getElementById("quest-runner-hero");
+        const questRange = document.getElementById("quest-runner-range");
+        const questProgressFill = document.getElementById("quest-progress-fill");
+        const questProgressLabel = document.getElementById("quest-progress-label");
+        const questProgressDuration = document.getElementById("quest-progress-duration");
+        const questStepContainer = document.getElementById("quest-step");
+        const questTimeline = document.getElementById("quest-timeline");
+        const questMilestones = document.getElementById("quest-milestones");
 
         const characterButtons = [];
         const levelButtons = [];
 
         let selectedHero = null;
         let selectedLevelId = null;
-        let questVisible = false;
+        let questState = createQuestState();
 
         renderCharacters();
         renderLevels();
-
-        const storedHeroId = storedSelection && storedSelection.hero ? storedSelection.hero.id : null;
-        const storedLevelId = storedSelection && storedSelection.level ? storedSelection.level.id : null;
 
         if (storedHeroId) {
           const hero = characters.find(function (item) {
             return item.id === storedHeroId;
           });
           if (hero) {
-            selectHero(hero);
+            selectHero(hero, true);
           }
         }
 
         if (storedLevelId) {
-          selectLevel(storedLevelId);
+          selectLevel(storedLevelId, true);
         }
 
-        updateStartState();
-
-        if (startButton) {
-          startButton.addEventListener("click", function () {
-            if (!selectedHero || !selectedLevelId) {
-              return;
-            }
-            renderQuest();
-          });
-        }
+        updateAdventureNote();
 
         function renderCharacters() {
           if (!characterContainer) {
@@ -864,333 +1226,277 @@
             levelContainer.append(button);
           });
         }
-
-        function selectHero(hero) {
+        function selectHero(hero, silent) {
           selectedHero = hero;
           characterButtons.forEach(function (button) {
             const isActive = hero && button.dataset.character === hero.id;
             button.dataset.selected = isActive ? "true" : "false";
-            button.classList.toggle("character-card--selected", isActive);
             button.setAttribute("aria-pressed", isActive ? "true" : "false");
           });
-          if (questVisible) {
-            hideQuest();
+          if (!silent) {
+            persistSelection();
           }
-          persistSelection();
-          updateStartState();
+          updateAdventureNote();
+          updateQuestState();
         }
 
-        function selectLevel(levelId) {
+        function selectLevel(levelId, silent) {
           selectedLevelId = levelId;
           levelButtons.forEach(function (button) {
             const isActive = levelId && button.dataset.level === levelId;
             button.dataset.selected = isActive ? "true" : "false";
-            button.classList.toggle("level-card--selected", isActive);
             button.setAttribute("aria-pressed", isActive ? "true" : "false");
           });
-          if (questVisible) {
-            hideQuest();
+          if (!silent) {
+            persistSelection();
           }
-          persistSelection();
-          updateStartState();
+          updateAdventureNote();
+          updateQuestState();
         }
 
-        function updateStartState() {
-          const ready = Boolean(selectedHero && selectedLevelId);
-          if (startButton) {
-            startButton.disabled = !ready;
-          }
-          updateSetupNote();
-        }
-
-        function updateSetupNote() {
-          if (!setupNote) {
+        function updateAdventureNote() {
+          if (!adventureNote) {
             return;
           }
           const level = selectedLevelId ? levelMap[selectedLevelId] : null;
-          let message = "Choisis un héros et un niveau pour préparer la mission.";
+          let message = "Choisis un héros et un niveau pour lancer la quête.";
 
           if (selectedHero && level) {
             const total = estimateTotal(level);
-            message = `${selectedHero.name} se prépare pour la quête « ${level.shortName} » (≈ ${total} min).`;
+            message = `${selectedHero.name} se prépare pour la mission « ${level.shortName} » (≈ ${total} min).`;
           } else if (selectedHero) {
             message = `${selectedHero.name} attend ton choix de niveau.`;
           } else if (level) {
-            message = `Choisis un héros pour guider la mission « ${level.shortName} ».`;
+            message = `Choisis un héros pour guider la mission « ${level.shortName} ». `;
           }
 
-          setupNote.textContent = message;
+          adventureNote.textContent = message;
         }
 
-        function renderQuest() {
+        function updateQuestState() {
           const level = selectedLevelId ? levelMap[selectedLevelId] : null;
-          if (!level || !selectedHero) {
-            return;
-          }
-
-          if (storyTitle) {
-            storyTitle.textContent = `${level.label} — ${level.shortName}`;
-          }
-
-          if (storyIntro) {
-            storyIntro.textContent = formatStory(level.intro);
-          }
-
-          if (storyDuration) {
-            const total = estimateTotal(level);
-            storyDuration.textContent = total ? `Durée totale estimée : ≈ ${total} min` : "";
-            storyDuration.hidden = !total;
-          }
-
-          if (chapterList) {
-            chapterList.innerHTML = "";
-            chapterElements.length = 0;
-            level.steps.forEach(function (step, index) {
-              const chapter = createChapter(step, index);
-              chapterElements.push(chapter);
-              chapterList.append(chapter);
-            });
-            chapterElements.forEach(function (item, index) {
-              setChapterExpanded(item, index === 0);
-            });
-          }
-
-          if (storyConclusion) {
-            storyConclusion.textContent = formatStory(level.conclusion);
-          }
-
-          if (storySection) {
-            storySection.hidden = false;
-            storySection.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-
-          questVisible = true;
-          if (startButton) {
-            startButton.textContent = "Relancer la quête";
+          if (selectedHero && level) {
+            startQuest(level);
+          } else {
+            hideQuest();
           }
         }
 
         function hideQuest() {
-          if (!questVisible) {
+          if (questRunner) {
+            questRunner.hidden = true;
+          }
+          questState = createQuestState();
+        }
+
+        function startQuest(level) {
+          if (!questRunner || !questStepContainer || !questTimeline || !questMilestones) {
             return;
           }
-          if (storySection) {
-            storySection.hidden = true;
+
+          questState = createQuestState(level);
+          questState.steps = Array.isArray(level.steps) ? level.steps.slice() : [];
+          questState.totalSteps = questState.steps.length;
+          questState.totalDuration = estimateTotal(level);
+          questState.currentIndex = questState.totalSteps > 0 ? 0 : -1;
+          questState.completed = 0;
+          questState.timelineItems = [];
+
+          questRunner.hidden = false;
+          questTimeline.innerHTML = "";
+          questMilestones.innerHTML = "";
+
+          questLevelLabel.textContent = `${level.label}`;
+          questTitle.textContent = level.shortName;
+          questIntro.textContent = formatStory(level.intro);
+          questHero.textContent = selectedHero ? `${selectedHero.name} mène la mission.` : "";
+          questRange.textContent = level.range;
+          questProgressDuration.textContent = questState.totalDuration
+            ? `Temps estimé ≈ ${questState.totalDuration} min`
+            : "Temps estimé ≈ 0 min";
+
+          buildTimeline();
+          renderQuestStage();
+
+          questRunner.scrollIntoView({ behavior: "smooth", block: "start" });
+          persistSelection();
+        }
+
+        function renderQuestStage() {
+          updateProgressBar();
+          updateTimeline();
+
+          if (!questStepContainer) {
+            return;
           }
-          questVisible = false;
-          if (startButton) {
-            startButton.textContent = "Lancer la quête";
+
+          if (!questState.level || !Array.isArray(questState.steps)) {
+            questStepContainer.innerHTML = "";
+            return;
+          }
+
+          if (questState.totalSteps === 0) {
+            questStepContainer.innerHTML = `
+              <div class="quest-step__conclusion">
+                <h3>Mission express</h3>
+                <p>Aucune étape n'est définie pour ce niveau. Choisis-en un autre pour continuer l'aventure.</p>
+              </div>
+            `;
+            return;
+          }
+
+          if (questState.currentIndex >= questState.totalSteps) {
+            questStepContainer.innerHTML = `
+              <div class="quest-step__conclusion">
+                <h3>Victoire !</h3>
+                <p>${formatStory(questState.level.conclusion)}</p>
+                ${questState.level.reward ? `<p class="quest-step__meta">Récompense : ${formatStory(questState.level.reward)}</p>` : ""}
+              </div>
+            `;
+            return;
+          }
+
+          const step = questState.steps[questState.currentIndex];
+          const durationText = typeof step.duration === "number" ? `${step.duration} min` : "";
+          const formattedNarrative = formatStory(step.narrative);
+          const stepHtml = `
+            <header class="quest-step__header">
+              <h3>${step.title}</h3>
+              <p class="quest-step__narrative">${formattedNarrative}</p>
+              ${step.game ? `<p class="quest-step__meta">${step.game}${durationText ? " • " + durationText : ""}</p>` : ""}
+              ${step.tableSummary ? `<p class="quest-step__meta">${step.tableSummary}</p>` : ""}
+              ${step.tip ? `<p class="quest-step__tip">${step.tip}</p>` : ""}
+            </header>
+            ${step.image ? `
+              <figure>
+                <img src="${step.image}" alt="${step.imageAlt || "Illustration de la mission"}" loading="lazy" />
+                ${step.imageCaption ? `<figcaption>${step.imageCaption}</figcaption>` : ""}
+              </figure>
+            ` : ""}
+            <div class="quest-step__actions">
+              ${step.actionUrl ? `<a class="primary-btn" href="${step.actionUrl}" target="_blank" rel="noopener">${step.actionLabel || "Ouvrir le mini-jeu"}</a>` : ""}
+              <button type="button" class="primary-btn" id="quest-complete-step">Mission terminée</button>
+            </div>
+          `;
+
+          questStepContainer.innerHTML = stepHtml;
+
+          const completeButton = document.getElementById("quest-complete-step");
+          if (completeButton) {
+            completeButton.addEventListener("click", function () {
+              completeCurrentStep();
+            });
           }
         }
 
-        function createChapter(step, index) {
-          const item = document.createElement("li");
-          item.className = "chapter";
-          item.dataset.completed = "false";
-          item.dataset.index = String(index);
-          item.dataset.expanded = "false";
-
-          const header = document.createElement("div");
-          header.className = "chapter__header chapter__header--interactive";
-          header.tabIndex = 0;
-          header.setAttribute("role", "button");
-          header.setAttribute("aria-expanded", "false");
-
-          const tag = document.createElement("span");
-          tag.className = "chapter__tag";
-          tag.textContent = `Chapitre ${index + 1}`;
-          header.append(tag);
-
-          const titleWrapper = document.createElement("div");
-          titleWrapper.className = "chapter__title-wrap";
-
-          if (step.title) {
-            const title = document.createElement("h3");
-            title.className = "chapter__title";
-            title.textContent = step.title;
-            titleWrapper.append(title);
+        function updateProgressBar() {
+          if (!questState.level || !questProgressFill || !questProgressLabel) {
+            return;
           }
 
-          if (typeof step.duration === "number" && step.duration > 0) {
-            const duration = document.createElement("span");
-            duration.className = "chapter__duration";
-            duration.textContent = `≈ ${step.duration} min`;
-            titleWrapper.append(duration);
+          const total = questState.totalSteps;
+          const completed = questState.completed;
+          const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+          questProgressFill.style.width = `${percent}%`;
+
+          if (completed >= total && total > 0) {
+            questProgressLabel.textContent = `Aventure terminée (${total} mission${total > 1 ? "s" : ""})`;
+          } else if (total > 0) {
+            questProgressLabel.textContent = `Mission ${completed + 1} sur ${total}`;
+          } else {
+            questProgressLabel.textContent = "En attente de mission";
+          }
+        }
+
+        function buildTimeline() {
+          if (!questTimeline) {
+            return;
           }
 
-          header.append(titleWrapper);
+          questTimeline.innerHTML = "";
+          questState.timelineItems = [];
 
-          const chevron = document.createElement("span");
-          chevron.className = "chapter__chevron";
-          chevron.setAttribute("aria-hidden", "true");
-          chevron.textContent = "▾";
-          header.append(chevron);
-
-          header.addEventListener("click", function () {
-            toggleChapter(item);
+          questState.steps.forEach(function (step, index) {
+            const item = document.createElement("li");
+            item.className = "timeline__item";
+            item.dataset.index = String(index);
+            item.innerHTML = `
+              <span class="timeline__badge">${index + 1}</span>
+              <div>
+                <p class="timeline__title">${step.title}</p>
+                <p class="timeline__meta">${step.game || "Mission"}${typeof step.duration === "number" ? ` • ${step.duration} min` : ""}</p>
+              </div>
+              <span class="timeline__status">À venir</span>
+            `;
+            const status = item.querySelector(".timeline__status");
+            questTimeline.append(item);
+            questState.timelineItems.push({ element: item, status: status });
           });
+        }
 
-          header.addEventListener("keydown", function (event) {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              toggleChapter(item);
+        function updateTimeline() {
+          if (!Array.isArray(questState.timelineItems)) {
+            return;
+          }
+
+          questState.timelineItems.forEach(function (entry, index) {
+            if (!entry || !entry.element) {
+              return;
             }
-          });
-
-          item.append(header);
-
-          const body = document.createElement("div");
-          body.className = "chapter__body";
-
-          if (step.image) {
-            const figure = document.createElement("figure");
-            figure.className = "chapter__illustration";
-            const image = document.createElement("img");
-            image.src = step.image;
-            image.alt = step.imageAlt || step.title || "Illustration de la mission";
-            image.loading = "lazy";
-            figure.append(image);
-            if (step.imageCaption) {
-              const caption = document.createElement("figcaption");
-              caption.textContent = step.imageCaption;
-              figure.append(caption);
-            }
-            body.append(figure);
-          }
-
-          if (step.narrative) {
-            const narrative = document.createElement("p");
-            narrative.className = "chapter__narrative";
-            narrative.textContent = formatStory(step.narrative);
-            body.append(narrative);
-          }
-
-          if (step.game) {
-            const game = document.createElement("p");
-            game.className = "chapter__game";
-            game.innerHTML = `<strong>Jeu :</strong> ${step.game}`;
-            body.append(game);
-          }
-
-          if (step.tableSummary) {
-            const tables = document.createElement("p");
-            tables.className = "chapter__meta";
-            tables.textContent = step.tableSummary;
-            body.append(tables);
-          }
-
-          if (step.tip) {
-            const tip = document.createElement("p");
-            tip.className = "chapter__tip";
-            tip.textContent = step.tip;
-            body.append(tip);
-          }
-
-          const actions = document.createElement("div");
-          actions.className = "chapter__actions";
-
-          if (step.actionUrl) {
-            const link = document.createElement("a");
-            link.className = "chapter__link";
-            link.href = step.actionUrl;
-            link.target = "_blank";
-            link.rel = "noopener";
-            link.textContent = step.actionLabel || "Lancer le mini-jeu";
-            actions.append(link);
-          }
-
-          const mark = document.createElement("button");
-          mark.type = "button";
-          mark.className = "chapter__mark";
-          mark.textContent = "Marquer comme terminé";
-          mark.setAttribute("aria-pressed", "false");
-          mark.addEventListener("click", function () {
-            const completed = item.dataset.completed === "true";
-            const nextState = !completed;
-            item.dataset.completed = nextState ? "true" : "false";
-            mark.textContent = nextState ? "Chapitre terminé ✔" : "Marquer comme terminé";
-            mark.setAttribute("aria-pressed", nextState ? "true" : "false");
-            if (nextState) {
-              expandChapterByIndex(index + 1, true);
+            entry.element.classList.remove("timeline__item--done", "timeline__item--current");
+            if (index < questState.completed) {
+              entry.element.classList.add("timeline__item--done");
+              if (entry.status) {
+                entry.status.textContent = "Terminé";
+              }
+            } else if (index === questState.currentIndex) {
+              entry.element.classList.add("timeline__item--current");
+              if (entry.status) {
+                entry.status.textContent = "En cours";
+              }
             } else {
-              collapseChaptersAfter(index);
+              if (entry.status) {
+                entry.status.textContent = "À venir";
+              }
             }
           });
-          actions.append(mark);
-
-          body.append(actions);
-          item.append(body);
-          return item;
         }
 
-        function setChapterExpanded(item, expanded) {
-          if (!item) {
+        function completeCurrentStep() {
+          if (!questState.level) {
             return;
           }
-          item.dataset.expanded = expanded ? "true" : "false";
-          updateChapterExpansion(item);
-        }
 
-        function toggleChapter(item) {
-          if (!item) {
+          if (questState.currentIndex >= questState.totalSteps) {
             return;
           }
-          const isExpanded = item.dataset.expanded === "true";
-          setChapterExpanded(item, !isExpanded);
+
+          const step = questState.steps[questState.currentIndex];
+          questState.completed += 1;
+
+          if (step && step.milestone) {
+            addMilestone(formatStory(step.milestone));
+          }
+
+          if (questState.completed >= questState.totalSteps) {
+            questState.currentIndex = questState.totalSteps;
+          } else {
+            questState.currentIndex = questState.completed;
+          }
+
+          renderQuestStage();
         }
 
-        function expandChapterByIndex(index, focus) {
-          if (index < 0 || index >= chapterElements.length) {
+        function addMilestone(text) {
+          if (!questMilestones) {
             return;
           }
-          const target = chapterElements[index];
-          setChapterExpanded(target, true);
-          if (focus && target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }
 
-        function collapseChaptersAfter(index) {
-          for (let i = index + 1; i < chapterElements.length; i += 1) {
-            setChapterExpanded(chapterElements[i], false);
-          }
+          const entry = document.createElement("p");
+          entry.className = "milestone";
+          entry.textContent = text;
+          questMilestones.append(entry);
         }
-
-        function updateChapterExpansion(item) {
-          if (!item) {
-            return;
-          }
-          const header = item.querySelector(".chapter__header");
-          const body = item.querySelector(".chapter__body");
-          const isExpanded = item.dataset.expanded === "true";
-          item.classList.toggle("chapter--collapsed", !isExpanded);
-          if (header) {
-            header.setAttribute("aria-expanded", isExpanded ? "true" : "false");
-          }
-          if (body) {
-            body.hidden = !isExpanded;
-          }
-        }
-
-        function estimateTotal(level) {
-          if (!level || !Array.isArray(level.steps)) {
-            return 0;
-          }
-          return level.steps.reduce(function (sum, step) {
-            return sum + (typeof step.duration === "number" ? step.duration : 0);
-          }, 0);
-        }
-
-        function formatStory(template) {
-          if (!template) {
-            return "";
-          }
-          if (!selectedHero) {
-            return template;
-          }
-          return template.replace(/\{hero\}/g, selectedHero.name);
-        }
-
         function persistSelection() {
           if (typeof window === "undefined" || !window.localStorage) {
             return;
@@ -1234,7 +1540,7 @@
               })
             );
           } catch (error) {
-            // ignore storage errors (quota, private mode...)
+            // ignore storage errors
           }
         }
 
@@ -1280,6 +1586,44 @@
           }
         }
 
+        function focusFirstCharacter() {
+          const firstButton = characterButtons[0];
+          if (firstButton) {
+            firstButton.focus({ preventScroll: true });
+          }
+        }
+
+        function createQuestState(level) {
+          return {
+            level: level || null,
+            steps: [],
+            totalSteps: 0,
+            totalDuration: 0,
+            currentIndex: -1,
+            completed: 0,
+            timelineItems: []
+          };
+        }
+
+        function estimateTotal(level) {
+          if (!level || !Array.isArray(level.steps)) {
+            return 0;
+          }
+          return level.steps.reduce(function (sum, step) {
+            return sum + (typeof step.duration === "number" ? step.duration : 0);
+          }, 0);
+        }
+
+        function formatStory(template) {
+          if (!template) {
+            return "";
+          }
+          if (!selectedHero) {
+            return template;
+          }
+          return template.replace(/\{hero\}/g, selectedHero.name);
+        }
+
         function buildCharacters() {
           return [
             {
@@ -1317,8 +1661,9 @@
               shortName: "Forêt des Apprentis",
               range: "Tables 1 à 3, avec un soupçon de 4",
               summary: "Idéal pour consolider les bases en douceur.",
-              intro: "Les feux follets ont volé le cristal du village. {hero} doit le récupérer avant que la nuit ne tombe.",
-              conclusion: "Grâce à sa ténacité, {hero} ramène le cristal et la forêt s'illumine de nouveau.",
+              intro: "Les feux follets ont dispersé le cristal du village. {hero} doit suivre leur lueur avant que la nuit ne tombe.",
+              conclusion: "Grâce à sa ténacité, {hero} reforme le cristal et la forêt s'illumine à nouveau.",
+              reward: "Cristal des Apprentis et Sifflet sylvestre pour accélérer les prochaines missions.",
               missionTables: [1, 2, 3],
               steps: [
                 {
@@ -1331,6 +1676,7 @@
                   actionUrl: buildMemoryUrl(2),
                   tableSummary: "Table ciblée : 2 (rappels des tables 1 et 3).",
                   tip: "Assemble les 6 paires pour reconstituer la carte lumineuse.",
+                  milestone: "{hero} reconstitue la carte lumineuse et gagne la confiance des gardiens de la forêt.",
                   image: "assets/chateau.png",
                   imageAlt: "Campement illuminé dans une clairière enchantée",
                   imageCaption: "Le bivouac reprend vie quand les fragments du grimoire sont réunis."
@@ -1345,6 +1691,7 @@
                   actionUrl: buildRouletteUrl([1, 2, 3]),
                   tableSummary: "Tables 1 à 3, avec quelques défis de la table 4.",
                   tip: "15 secondes par question, ne laisse pas la clairière s'assombrir !",
+                  milestone: "{hero} libère les portails et obtient le Sifflet sylvestre pour accélérer l'équipe.",
                   image: "assets/gobelin.png",
                   imageAlt: "Gobelin filant avec une lanterne magique",
                   imageCaption: "Cours après les gobelins avant qu'ils ne referment les portails."
@@ -1359,6 +1706,7 @@
                   actionUrl: buildTrueFalseUrl([1, 2, 3, 4], "apprenti"),
                   tableSummary: "Tables 1 à 3 et quelques touches de la table 4.",
                   tip: "Tu disposes de 12 secondes pour valider chaque sort.",
+                  milestone: "L'esprit du pont remet à {hero} le cristal principal et ouvre l'accès aux Montagnes Obsidiennes.",
                   image: "assets/dragon.png",
                   imageAlt: "Esprit draconique sculpté gardant un pont de pierre",
                   imageCaption: "Réponds juste pour que l'esprit du pont te laisse passer."
@@ -1371,8 +1719,9 @@
               shortName: "Montagnes Obsidiennes",
               range: "Tables 4 à 6, avec une pointe de 7",
               summary: "Parfait pour gagner en rythme avant les grands défis.",
-              intro: "Les trolls de pierre ont bloqué les mines obsidiennes. {hero} doit rouvrir le passage avant la prochaine lune.",
-              conclusion: "{hero} libère les cristaux et les mineurs peuvent à nouveau voyager.",
+              intro: "Les trolls de pierre ont scellé les mines obsidiennes. {hero} doit réactiver les runes avant la prochaine lune.",
+              conclusion: "Les cristaux s'éveillent et {hero} reçoit le Marteau d'obsidienne.",
+              reward: "Marteau d'obsidienne et accès à la Porte des Chimères.",
               missionTables: [4, 5, 6],
               steps: [
                 {
@@ -1385,6 +1734,7 @@
                   actionUrl: buildMemoryUrl(5),
                   tableSummary: "Table ciblée : 5 (rappels des tables 4 à 6).",
                   tip: "Retrouve vite les 6 paires gardées par les trolls.",
+                  milestone: "{hero} rallume les sentinelles et sécurise les tunnels inférieurs.",
                   image: "assets/chevalier noir.png",
                   imageAlt: "Statue de chevalier sombre gardant l'entrée d'une mine",
                   imageCaption: "Rassemble les runes gravées sur les sentinelles de pierre."
@@ -1399,6 +1749,7 @@
                   actionUrl: buildRouletteUrl([4, 5, 6]),
                   tableSummary: "Tables 4 à 6 avec quelques incursions de la table 7.",
                   tip: "15 secondes par question : maintiens le rythme d'un chevalier.",
+                  milestone: "{hero} active les plateformes obsidiennes pour hisser l'équipe vers le sommet.",
                   image: "assets/chevalier.png",
                   imageAlt: "Chevalier gravissant un passage escarpé",
                   imageCaption: "Grimpe vers les sommets obsidiens sans perdre ton souffle."
@@ -1413,6 +1764,7 @@
                   actionUrl: buildTrueFalseUrl([4, 5, 6, 7], "chevalier"),
                   tableSummary: "Tables 4 à 6 et quelques questions de la table 7.",
                   tip: "8 secondes par question, reste concentré jusqu'au bout.",
+                  milestone: "Le golem offre le cœur de la montagne, {hero} gagne une réserve d'énergie.",
                   image: "assets/coffre.png",
                   imageAlt: "Relique magique reposant dans un coffre ancien",
                   imageCaption: "Le cœur de la montagne renferme un trésor qui réagit à tes réponses."
@@ -1426,7 +1778,8 @@
               range: "Tables 7 à 9 uniquement",
               summary: "Une mission intense pour maîtriser les tables élevées.",
               intro: "Le désert des Chimères menace d'engloutir l'oasis sacrée. {hero} doit sceller la faille avant le coucher du soleil.",
-              conclusion: "Le dragon apaise la tempête et {hero} gagne une relique ancestrale.",
+              conclusion: "Le dragon apaise la tempête et {hero} reçoit la Relique des Chimères.",
+              reward: "Relique des Chimères et accès au mode expert.",
               missionTables: [7, 8, 9],
               steps: [
                 {
@@ -1439,6 +1792,7 @@
                   actionUrl: buildMemoryUrl(8),
                   tableSummary: "Table ciblée : 8 (rappels des tables 7 à 9).",
                   tip: "Assemble les paires avant que la tempête de sable n'arrive.",
+                  milestone: "{hero} récupère les glyphes brûlants et obtient la boussole de sable.",
                   image: "assets/sorciere.png",
                   imageAlt: "Mage des sables levant un bâton runique",
                   imageCaption: "Collecte les glyphes perdus dans les ruines brûlantes."
@@ -1453,6 +1807,7 @@
                   actionUrl: buildRouletteUrl([7, 8, 9]),
                   tableSummary: "Tables 7 à 9 uniquement.",
                   tip: "15 secondes par question, garde ton sang-froid.",
+                  milestone: "Les mirages se dissipent et {hero} ouvre un passage vers le temple.",
                   image: "assets/princesse.png",
                   imageAlt: "Exploratrice avançant dans un désert étincelant",
                   imageCaption: "Fonce entre les mirages sans perdre le fil des multiplications."
@@ -1467,6 +1822,7 @@
                   actionUrl: buildTrueFalseUrl([7, 8, 9], "dragon"),
                   tableSummary: "Tables 7 à 9 uniquement.",
                   tip: "5 secondes par question : réponds sans hésiter !",
+                  milestone: "Le dragon scelle la faille et offre son écaille protectrice à {hero}.",
                   image: "assets/dragon.png",
                   imageAlt: "Dragon de sable déployant ses ailes devant un temple",
                   imageCaption: "Triomphe du dragon pour sceller le désert des Chimères."
@@ -1499,7 +1855,9 @@
             url += `?tables=${values.join(",")}`;
           }
           if (difficulty) {
-            url += values.length ? `&difficulty=${encodeURIComponent(difficulty)}` : `?difficulty=${encodeURIComponent(difficulty)}`;
+            url += values.length
+              ? `&difficulty=${encodeURIComponent(difficulty)}`
+              : `?difficulty=${encodeURIComponent(difficulty)}`;
           }
           return url;
         }
